@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cv"
-        app:cardBackgroundColor="@color/common_action_bar_splitter">
+        app:cardBackgroundColor="@color/colorPrimary">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/product_name"
                 android:textSize="30sp"
-                android:textColor="@color/common_google_signin_btn_text_light_pressed" />
+                android:textColor="@color/colorPrimary" />
                 <!--android:layout_toRightOf="@+id/person_photo"
                 android:layout_alignParentTop="true"-->
 

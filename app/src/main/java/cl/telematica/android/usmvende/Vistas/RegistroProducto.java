@@ -1,13 +1,10 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Vistas;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +32,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.lang.*;
 import java.util.StringTokenizer;
+
+import cl.telematica.android.usmvende.Presenters.LocationPresenterImpl;
+import cl.telematica.android.usmvende.Interfaces.LocationView;
+import cl.telematica.android.usmvende.R;
+import cl.telematica.android.usmvende.Models.Producto;
 
 public class RegistroProducto extends AppCompatActivity implements View.OnClickListener, LocationView {
 

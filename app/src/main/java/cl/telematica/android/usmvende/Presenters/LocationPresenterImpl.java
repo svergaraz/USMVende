@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Presenters;
 
 
 import android.Manifest;
@@ -9,6 +9,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+
+import cl.telematica.android.usmvende.Interfaces.LocationView;
+import cl.telematica.android.usmvende.Interfaces.LocationPresenter;
 
 
 public class LocationPresenterImpl implements LocationPresenter, LocationListener {

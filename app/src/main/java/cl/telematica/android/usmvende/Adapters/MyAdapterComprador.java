@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -7,9 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
+
+import cl.telematica.android.usmvende.Models.Producto;
+import cl.telematica.android.usmvende.R;
 
 
 public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.ViewHolder> {

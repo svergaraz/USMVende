@@ -1,20 +1,15 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Vistas;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONObject;
@@ -26,7 +21,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.StringTokenizer;
+
+import cl.telematica.android.usmvende.R;
 
 //server key(usmvende)= AIzaSyCWVNhWkYq3Yt82xZ7QecGyyPAyCsuWipg
 //sender ID(usmvende) = 480701540016

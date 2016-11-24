@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Interfaces;
 
 /**
  * Created by jvquiroga on 06-10-2016.
