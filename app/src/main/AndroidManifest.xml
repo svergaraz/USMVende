@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cl.telematica.android.usmvende">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     //internet
     <uses-permission android:name= "android.permission.INTERNET" />
     //Network provider
@@ -18,13 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-               <activity android:name=".menu">
+               <activity android:name=".Vistas.menu">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- [START firebase_service] -->
         <service android:name=".MyFirebaseMessagingService">
             <intent-filter>
@@ -32,6 +34,8 @@
             </intent-filter>
         </service>
         <!-- [END firebase_service] -->
+
+
         <!-- [START firebase_iid_service] -->
         <service android:name=".MyFirebaseInstanceIDService">
             <intent-filter>
@@ -39,7 +43,21 @@
             </intent-filter>
         </service>
         <!-- [END firebase_iid_service] -->
-        <activity android:name=".RegistroProducto"></activity>
-        <activity android:name=".Comprador"></activity>
+
+        <activity android:name=".Vistas.RegistroProducto"></activity>
+        <activity android:name=".Vistas.Comprador"></activity>
+
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/.
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key"/>
+
     </application>
 </manifest>

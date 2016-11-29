@@ -12,6 +12,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import cl.telematica.android.usmvende.Vistas.menu;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
     /**
@@ -67,8 +69,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(body)
                 .setAutoCancel(true)
                 .setSound(notificationSound)
-                .setContentIntent(pendingIntent);
-        //.setContentTitle("Firebase Cloud Messaging")
+                .setContentIntent(pendingIntent)
+                .setContentTitle("Usm Vende");
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0 /*ID of notification*/, notifiBuilder.build());
     }

@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Models;
 
 
 public class Producto {

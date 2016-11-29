@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Interfaces;
 
 import android.location.Location;
 
