@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">USM Vende</string>
-
-    <!-- ERRORES -->
-    <string name="location_error_msg">El servicio de localización no está disponible</string>
-    <string name="permission_error_msg">Los permisos necesarios no han sido otorgados</string>
-    <string name="status_msg">El status ha cambiado</string>
-</resources>
