@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:weightSum="1">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+            <TextView
+                android:id="@+id/tvIsConnected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:background="#FF0000"
+                android:textColor="#FFF"
+                android:textSize="18dp"
+                android:layout_marginBottom="5dp"
+                android:text="is connected?" />
+
+            <TextView
+                android:id="@+id/lblNombreProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre Producto" />
+
+            <EditText
+                android:id="@+id/txtNombreProducto"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:inputType="text"/>
+
+            <TextView
+                android:id="@+id/lblDescpProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descripción del Producto" />
+
+            <EditText
+                android:id="@+id/txtDescpProducto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="text"
+                android:layout_weight="0.25" />
+
+            <TextView
+                android:id="@+id/lblPrecioProducto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Precio del Producto" />
+
+            <EditText
+                android:id="@+id/txtPrecioProducto"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+
+            <TextView
+                android:id="@+id/lblNombreVendedor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre Vendedor" />
+
+            <EditText
+                android:id="@+id/txtNombreVendedor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="1">
+                <Button
+                    android:id="@+id/btnRegistrarProducto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Registrar Producto"
+                    android:layout_gravity="center_horizontal" />
+
+                <Switch
+                    android:id="@+id/btnVenderProducto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="0.19"
+                    android:textOn="on"
+                    android:textOff="off"
+                    android:checked="false" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FF0000"
+                    android:textColor="#FFF"
+                    android:textSize="20dp"
+                    android:text="is selling?" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/latitudeData"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/longitudeData"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
