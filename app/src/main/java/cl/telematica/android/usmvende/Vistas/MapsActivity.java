@@ -1,10 +1,12 @@
 package cl.telematica.android.usmvende.Vistas;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,14 +19,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+//import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -47,26 +49,23 @@ import java.util.List;
 import cl.telematica.android.usmvende.DataParser;
 import cl.telematica.android.usmvende.R;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
-
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private GoogleMap mMap;
     ArrayList<LatLng> MarkerPoints;
     GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    Marker mCurrLocationMarker;
+    private Marker marcador;
     LocationRequest mLocationRequest;
     String posVendedor;
-
+    Context mContext;
+    double mlatitude, mlongitude;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        posVendedor=getIntent().getStringExtra("latlng");
+        posVendedor = getIntent().getStringExtra("latlng");
+        mContext = this;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
@@ -99,7 +98,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Initialize Google Play Services
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {buildGoogleApiClient();
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                buildGoogleApiClient();
                 //Activamos la capa MyLocation, la cual nos permite obtener la ubicación actual del ususario
                 mMap.setMyLocationEnabled(true);
             }
@@ -107,34 +107,53 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+
+        //SOLICITA COORDENADAS DEL VENDEDOR
         //proceso de obtencion de coordenadas del vendedor recibidas por notificacion
         String[] aux = posVendedor.split(",");
-        String[] aux2= aux[0].split(":");
-        Log.d("coordenadas lat/long",aux2[1] +"/"+ aux[1]);
+        String[] aux2 = aux[0].split(":");
+        Log.d("coordenadas lat/long", aux2[1] + "/" + aux[1]);
         LatLng posSeller = new LatLng(Double.parseDouble(aux2[1].toString().trim()), Double.parseDouble(aux[1].toString().trim()));
         // Adding new item to the ArrayList
         MarkerPoints.add(posSeller);
         // Creating MarkerOptions
         MarkerOptions options = new MarkerOptions();
         // Setting the position of the marker
-        options.position(posSeller).title("Posicion Vendedor: "+aux2[1].toString().trim()+"/"+aux[1].toString().trim());
+        options.position(posSeller).title("Posicion Vendedor: " + aux2[1].toString().trim() + "/" + aux[1].toString().trim());
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         // Add new marker to the Google Map Android API V2
         mMap.addMarker(options);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(posSeller));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
+        //SOLICITA COORDENADAS DEL COMPRADOR
+        miUbicacion();
 
-        //LatLng posClient = new LatLng(-33.035783,-71.5959937);
-        LatLng posClient = new LatLng(-33.037595, -71.588611);
 
+
+    }
+
+    private void agregarMarcador(double lat, double lng) {
+        LatLng posClient = new LatLng(lat, lng);
         MarkerPoints.add(posClient);
-        MarkerOptions optionclient = new MarkerOptions();
-        optionclient.position(posClient).title("Posicion Comprador:" +"-33.035783" +"/"+ "-71.5959937");
-        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        mMap.addMarker(optionclient);
+        CameraUpdate miubicacion = CameraUpdateFactory.newLatLngZoom(posClient, 18);
+        if (marcador != null) {
+            marcador.remove();
+        }
+        marcador = mMap.addMarker(new MarkerOptions().position(posClient).title("Posicion Comprador:" + lat + "/" + lng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        mMap.animateCamera(miubicacion);
 
-        // Checks, whether start and end locations are captured
+    }
+
+    private void actualizarUbicacion(Location location) {
+        if (location != null) {
+            mlatitude = location.getLatitude();
+            mlongitude = location.getLongitude();
+            if (MarkerPoints.size() >1){
+                MarkerPoints.remove(1);
+            }
+            agregarMarcador(mlatitude, mlongitude);
+            // Checks, whether start and end locations are captured
             LatLng origin = MarkerPoints.get(0);
             LatLng dest = MarkerPoints.get(1);
 
@@ -150,8 +169,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
 
+        }
+
     }
 
+    LocationListener loclistener = new LocationListener() {
+        @Override
+        public void onLocationChanged(Location location) {
+            actualizarUbicacion(location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
+    private void miUbicacion() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        actualizarUbicacion(location);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,15000,0,loclistener);
+
+    }
     private String getUrl(LatLng origin, LatLng dest) {
         // Origin of route
         String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
@@ -314,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onConnected(Bundle bundle) {
-
+        /*
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
@@ -324,7 +377,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
-
+        */
     }
 
     @Override
@@ -332,32 +385,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng).title("Posicion Comprador");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
-        MarkerPoints.add(latLng);
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-
-    }
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
