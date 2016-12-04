@@ -2,7 +2,6 @@ package cl.telematica.android.usmvende.Vistas;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -44,6 +43,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 
 import cl.telematica.android.usmvende.DataParser;
