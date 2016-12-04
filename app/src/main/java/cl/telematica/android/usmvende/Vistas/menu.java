@@ -51,7 +51,7 @@ public class menu extends AppCompatActivity {
             }
         });
 
-        btnComprar.setOnClickListener(3.0new View.OnClickListener() {
+        btnComprar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(menu.this,Comprador.class);

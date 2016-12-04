@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cl.telematica.android.usmvende.DataParser;
 import cl.telematica.android.usmvende.R;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
