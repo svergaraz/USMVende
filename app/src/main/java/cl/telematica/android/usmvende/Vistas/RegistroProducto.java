@@ -150,11 +150,8 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                     switchStatus.setText("No Vendiendo");
                     switchStatus.setBackgroundColor(0xFFFF0000);
                 }
-
-
             }
         });
-
     }
 
     // Metodo encargado de la implementacion de los botones y la obtencion de datos
@@ -174,25 +171,6 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 }
                 new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/nuevo_producto", NP, DP, PP, NV,"","");
                 break;
-            /*
-            case R.id.btnVenderProducto:
-                String Long;
-                String Lati;
-                if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    showPermissionErrorMsg();
-                    return;
-                }
-                else
-                {
-                    //location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER); // obtengo la ultima localizacion registrada por GPS
-                    Toast.makeText(this, "Obteniendo localizacion...", Toast.LENGTH_LONG).show();
-                    Lati=mLatitudeData.getText().toString();
-                    Long=mLongitudeData.getText().toString();
-                }
-                //Toast.makeText(this, "Ejecutando hilo..", Toast.LENGTH_LONG).show();
-                new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender", NP, DP, PP, NV,Lati,Long);
-                break;
-                */
         }
 
     }
@@ -225,7 +203,6 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 jsonObject.put("vendedor", person.getNombreV());
             }
             else if (third.trim().equals("vender")) {
-                //jsonObject.put("vendedor", person.getNombreV());
                 jsonObject.put("vendedor", person.getNombreV());
                 System.out.println(person.getLocalizacion());
                 jsonObject.put("gps", person.getLocalizacion());
@@ -239,16 +216,6 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
             OutputStream os = connection.getOutputStream();
             os.write(json.getBytes());
             os.flush();
-            /*
-            // read the response
-            InputStream in = new BufferedInputStream(connection.getInputStream());
-            //System.out.println(convertInputStreamToString(in));
-            // convert inputstream to string
-            if (in != null)
-                result = convertInputStreamToString(in);
-            else
-                result = "No funciono!";
-            in.close();*/
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             String inputLine;

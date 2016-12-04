@@ -2,10 +2,12 @@ package cl.telematica.android.usmvende.Vistas;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -22,6 +24,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import cl.telematica.android.usmvende.Models.BaseDatosSqlite;
 import cl.telematica.android.usmvende.R;
 
 //server key(usmvende)= AIzaSyCWVNhWkYq3Yt82xZ7QecGyyPAyCsuWipg
@@ -31,8 +34,7 @@ import cl.telematica.android.usmvende.R;
 public class menu extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     //private BroadcastReceiver mRegistrationBroadcastReceiver;
-    Button btnVender;
-    Button btnComprar;
+    Button btnVender,btnComprar,cerrar_sesion;
     public String token;
     Context mcontext;
     @Override
@@ -42,6 +44,7 @@ public class menu extends AppCompatActivity {
         mcontext = this;
         btnComprar = (Button) findViewById(R.id.btnComprador);
         btnVender = (Button) findViewById(R.id.btnVendedor);
+        cerrar_sesion = (Button) findViewById(R.id.cerrar);
 
         btnVender.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +61,30 @@ public class menu extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        cerrar_sesion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(menu.this,Login.class);
+                BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
+                SQLiteDatabase db = dbInstance.getWritableDatabase();
+                if(db != null){
+                    db.beginTransaction(); //inicializo al inicio del for donde hago las inserciones sin abrir ni cerrar la base de datos
+                    try{
+                        db.execSQL("delete from Logins where 1");
+                    }
+                    //luego al final fuera del for cuando termine
+                    finally {
+                        db.setTransactionSuccessful();
+                    }
+                    db.endTransaction();
+                    db.close();
+                }
+
+                startActivity(intent);
+            }
+        });
+
 
         token = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Token: " + token);
