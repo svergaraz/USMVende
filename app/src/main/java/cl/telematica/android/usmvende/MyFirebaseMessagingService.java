@@ -36,8 +36,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // and data payloads are treated as notification messages. The Firebase console always sends notification
         // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
         // [END_EXCLUDE]
-        Log.d(TAG, "FROM:" + remoteMessage.getFrom());
 
+        //Hay dos tipos de mensajes: mensajes de datos y mensajes de notificación. Los mensajes de datos se manejan
+        // aquí en onMessageReceived si la aplicación está en primer plano o en segundo plano. Los mensajes de datos son del tipo
+        // tradicionalmente utilizado con GCM. Los mensajes de notificación solo se reciben aquí en onMessageReceived cuando la aplicación
+        // está en primer plano. Cuando la aplicación está en segundo plano, se muestra una notificación generada automáticamente.
+        // Cuando el usuario teclea la notificación, se devuelve a la aplicación. Mensajes que contengan ambas notificaciones
+        // y las cargas de datos son tratadas como mensajes de notificación. La consola Firebase siempre envía una notificación
+        // mensajes.
+
+        Log.d(TAG, "FROM:" + remoteMessage.getFrom());
         //Check if the message contains data
         if(remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data: " + remoteMessage.getData());
