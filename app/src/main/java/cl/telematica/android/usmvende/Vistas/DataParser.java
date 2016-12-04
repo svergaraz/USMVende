@@ -1,4 +1,4 @@
-package cl.telematica.android.usmvende;
+package cl.telematica.android.usmvende.Vistas;
 
 import com.google.android.gms.maps.model.LatLng;
 
