@@ -7,6 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +23,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
 
     private List<Producto> producto;
     private Activity activity;
+    //private String tab;
 
     public MyAdapterComprador(Activity activity, List<Producto> producto){
         this.producto = producto;
@@ -31,6 +35,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
         private TextView productName;
         private TextView productDesc;
         private TextView productPrecio;
+        private CheckBox ch;
         private View container;
 
         public ViewHolder (View itemView){
@@ -38,6 +43,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
             // cv = (CardView)itemView.findViewById(R.id.cv);
             container = itemView.findViewById(R.id.cv);
             productName = (TextView)itemView.findViewById(R.id.product_name);
+            ch = (CheckBox) itemView.findViewById(R.id.checkBox);
             //productDesc = (TextView)itemView.findViewById(R.id.product_description);
             productPrecio =(TextView)itemView.findViewById(R.id.product_precio);
         }
@@ -54,11 +60,13 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+
         Producto produc = producto.get(position);
         holder.productName.setText(produc.getNombreP());
        // holder.productDesc.setText(produc.getDescripcion());
         holder.productPrecio.setText(produc.getPrecio());
         holder.container.setOnClickListener(onClickListener(position));
+        if (produc.getFav() == "SI"){holder.ch.isChecked();}
 
     }
 
@@ -74,14 +82,15 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                 TextView productName = (TextView) dialog.findViewById(R.id.product_name2);
                 TextView productDesc = (TextView) dialog.findViewById(R.id.product_description2);
                 TextView productPrecio = (TextView) dialog.findViewById(R.id.product_precio2);
-
-                View btnFav = dialog.findViewById(R.id.btn_ok);
-
+                //View btnFav = dialog.findViewById(R.id.btn_ok);
                 productName.setText(producto.get(position).getNombreP());
                 productPrecio.setText(producto.get(position).getPrecio());
                 productDesc.setText(producto.get(position).getDescripcion());
 
+                View btnFav = dialog.findViewById(R.id.btn_ok);
                 btnFav.setOnClickListener(onFavoriteListener(position));
+
+               // btnFav.setOnClickListener(onFavoriteListener(position));
                 dialog.show();
             }
         };
@@ -91,7 +100,10 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                producto.get(position).setFav("SI");
+                if (producto.get(position).getFav() == "NO") {
+                    producto.get(position).setFav("SI");
+                }
+                else {producto.get(position).setFav("NO");}
                 Toast.makeText(activity, producto.get(position).getFav(), Toast.LENGTH_SHORT).show();
             }
 
@@ -102,4 +114,5 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }*/
+
 }
