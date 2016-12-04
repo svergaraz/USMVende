@@ -1,5 +1,6 @@
 package cl.telematica.android.usmvende.Vistas;
 
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.content.Intent;
@@ -9,10 +10,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
+import cl.telematica.android.usmvende.HttpServerConnection;
 import cl.telematica.android.usmvende.Models.Producto;
 import cl.telematica.android.usmvende.R;
 
@@ -22,7 +28,8 @@ import cl.telematica.android.usmvende.R;
 
 public class BlankFragment extends Fragment{
 
-    private  ArrayList<Producto> productoList;
+    private RecyclerView rv;
+
     public BlankFragment() {
         // Required empty public constructor
     }
@@ -31,6 +38,7 @@ public class BlankFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
     }
 
     @Override
@@ -38,31 +46,69 @@ public class BlankFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_comprador, container, false);
-        RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        rv = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         rv.setHasFixedSize(true);
         //Bundle bundle;
        // Producto producto;// = new Producto();
         //producto = getActivity().getIntent().getParcelableExtra("Data");
         //productoList.add(producto);
-        MyAdapterComprador adapter = new MyAdapterComprador(getActivity() , getListProduct());
-        rv.setAdapter(adapter);
+        //MyAdapterComprador adapter = new MyAdapterComprador(getActivity() , getListProduct());
+        //rv.setAdapter(adapter);
 
         LinearLayoutManager llm = new LinearLayoutManager(getActivity());
         rv.setLayoutManager(llm);
 
+        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected void onPreExecute(){
+
+            }
+
+            @Override
+            protected String doInBackground(Void... params) {
+                String resultado = new HttpServerConnection().connectToServer("http://usmvende.telprojects.xyz/compradorall", 1500);
+                return resultado;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                if(result != null){
+                    System.out.println(result);
+
+                    // specify an adapter (see also next example)
+                    MyAdapterComprador adapter = new MyAdapterComprador(getActivity() , getListProduct(result));
+                    rv.setAdapter(adapter);
+                }
+            }
+        };
+        task.execute();
         return rootView;
     }
 
-    public List<Producto> getListProduct(){
-        List<Producto> producto = new ArrayList<>();
-        for(int i = 0; i < 12; i++) {
-            Producto  p = new Producto();
-            p.setDescripcion("Producto "+i+" es muy bonito");
-            p.setNombreP("Producto"+ i);
-            p.setFav("NO");
-            p.setPrecio("$22"+i);
-            producto.add(p);
+    public List<Producto> getListProduct(String result){
+        List<Producto> listaProducto = new ArrayList<Producto>();
+
+        try {
+            JSONArray lista = new JSONArray(result);
+
+            int size = lista.length();
+            for(int i = 0; i < size; i++){
+                Producto producto = new Producto();
+                JSONObject objeto = lista.getJSONObject(i);
+
+                producto.setNombreP(objeto.getString("producto"));
+                producto.setNombreV(objeto.getString("vendedor"));
+                producto.setPrecio(objeto.getString("precio"));
+                producto.setDescripcion(objeto.getString("descripion"));
+                producto.setSell(objeto.getInt("vendiendo"));
+
+                listaProducto.add(producto);
+            }
+            return listaProducto;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return listaProducto;
         }
-        return producto;
     }
 }

@@ -1,6 +1,7 @@
 package cl.telematica.android.usmvende.Vistas;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cl.telematica.android.usmvende.Adapters.PagerAdapter;
+import cl.telematica.android.usmvende.HttpServerConnection;
 import cl.telematica.android.usmvende.Models.Producto;
 import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
 import cl.telematica.android.usmvende.R;
@@ -58,14 +60,14 @@ public class Comprador extends AppCompatActivity {
             TabLayout.Tab tab = tabLayout.getTabAt(i);
             tab.setCustomView(pagerAdapter.getTabView(i));
         }
+
     }
     @Override
     public void onResume(){
         super.onResume();
     }
 
-
-   /* public List<Producto> getListProduct(){
+    public List<Producto> getListProduct(String result){
         producto = new ArrayList<>();
         for(int i = 0; i < 12; i++) {
             Producto  p = new Producto();
@@ -76,6 +78,6 @@ public class Comprador extends AppCompatActivity {
             producto.add(p);
         }
         return producto;
-    }*/
+    }
 
 }
