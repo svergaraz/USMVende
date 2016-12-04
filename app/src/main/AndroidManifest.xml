@@ -49,10 +49,12 @@
         <activity android:name=".Vistas.RegistroProducto" />
         <activity android:name=".Vistas.Comprador" />
         <activity android:name=".Vistas.MapsActivity">
-        <intent-filter>
-            <action android:name="OPEN_ACTIVITY_1" />
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
+            <!--
+            <intent-filter>
+                <action android:name="OPEN_ACTIVITY_1" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            -->
         </activity>
 
         <!--
