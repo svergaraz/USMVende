@@ -35,7 +35,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
         private TextView productName;
         private TextView productDesc;
         private TextView productPrecio;
-        private CheckBox ch;
+        private Switch sw;
         private View container;
 
         public ViewHolder (View itemView){
@@ -43,7 +43,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
             // cv = (CardView)itemView.findViewById(R.id.cv);
             container = itemView.findViewById(R.id.cv);
             productName = (TextView)itemView.findViewById(R.id.product_name);
-            ch = (CheckBox) itemView.findViewById(R.id.checkBox);
+            sw = (Switch) itemView.findViewById(R.id.switch1);
             //productDesc = (TextView)itemView.findViewById(R.id.product_description);
             productPrecio =(TextView)itemView.findViewById(R.id.product_precio);
         }
@@ -66,10 +66,21 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
        // holder.productDesc.setText(produc.getDescripcion());
         holder.productPrecio.setText(produc.getPrecio());
         holder.container.setOnClickListener(onClickListener(position));
-        if (produc.getFav() == "SI"){holder.ch.isChecked();}
+        holder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    sendItemInf(pos, isChecked);
+                }
+                else{
+
+                }
+            }
+        });
 
     }
 
+    private void sendItemInf(int position, )
     private View.OnClickListener onClickListener(final int position) {
         return new View.OnClickListener() {
             @Override
@@ -90,7 +101,6 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                 View btnFav = dialog.findViewById(R.id.btn_ok);
                 btnFav.setOnClickListener(onFavoriteListener(position));
 
-               // btnFav.setOnClickListener(onFavoriteListener(position));
                 dialog.show();
             }
         };
@@ -114,5 +124,6 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }*/
+
 
 }

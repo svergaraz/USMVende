@@ -2,6 +2,7 @@ package cl.telematica.android.usmvende.Vistas;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -10,8 +11,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,8 +35,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.lang.*;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
 import cl.telematica.android.usmvende.Presenters.LocationPresenterImpl;
 import cl.telematica.android.usmvende.Interfaces.LocationView;
 import cl.telematica.android.usmvende.R;
@@ -49,6 +55,12 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     TextView mLongitudeData;
     TextView switchStatus;
 
+    /*______________________________________________*/
+    private RecyclerView recyclerView;
+    private MyAdapterComprador adapter;
+    private ArrayList<Producto> listProduct;
+    private FloatingActionButton fab;
+    /*______________________________________________*/
     Producto person;
     String NP, DP, PP, NV;
     //Location location; // para guardar una lectura de coordenadas obtenida por el proveedor
@@ -92,7 +104,21 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro_producto);
+        //setContentView(R.layout.activity_registro_producto);
+        /*____________________________________*/
+        setContentView(R.layout.act_rg_pro);
+        recyclerView = (RecyclerView) findViewById(R.id.recyle_view);
+        listProduct = new ArrayList<Producto>();
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        recyclerView.setHasFixedSize(true);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        //setRecyclerViewData();
+        adapter = new MyAdapterComprador (this, listProduct);
+        recyclerView.setLayoutManager(layoutManager);
+
+        fab.setOnClickListener(onAddingListener());
+        /*____________________________________*/
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
         mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
@@ -100,10 +126,10 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         mLatitudeData = (TextView) findViewById(R.id.latitudeData);
         mLongitudeData = (TextView) findViewById(R.id.longitudeData);
         //Obtenemos una referencia a los controles de la interfaz
-        txtNP = (EditText) findViewById(R.id.txtNombreProducto);
+        /*txtNP = (EditText) findViewById(R.id.txtNombreProducto);
         txtDP = (EditText) findViewById(R.id.txtDescpProducto);
         txtPP = (EditText) findViewById(R.id.txtPrecioProducto);
-        txtNV = (EditText) findViewById(R.id.txtNombreVendedor);
+        txtNV = (EditText) findViewById(R.id.txtNombreVendedor);*/
         tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
         btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
         //btnVP = (Button) findViewById(R.id.btnVenderProducto);
@@ -111,14 +137,14 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
 
         // check if you are connected or not
-        if (isConnected()) {
+        /*if (isConnected()) {
             tvIsConnected.setBackgroundColor(0xFF00CC00);
             tvIsConnected.setText("You are connected");
         } else {
             tvIsConnected.setText("You are NOT connected");
-        }
+        }*/
         // add click listener to Button "POST"
-        btnRP.setOnClickListener(this);
+       // btnRP.setOnClickListener(this);
         //btnVP.setOnClickListener(this);
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -313,4 +339,56 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     public void manageStatusChange(String provider, int status) {
         Toast.makeText(this, getString(R.string.status_msg) + "--> Provider: " + provider + " Status: " + status, Toast.LENGTH_LONG).show();
     }
+
+    private View.OnClickListener onAddingListener(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Dialog dialog = new Dialog(RegistroProducto.this);
+                dialog.setContentView(R.layout.dialog_add); //layout for dialog
+                dialog.setTitle("Agregar Producto");
+                dialog.setCancelable(false); //none-dismiss when touching outside Dialog
+
+                // set the custom dialog components - texts and image
+                txtNP = (EditText) dialog.findViewById(R.id.txtNombreProducto);
+                txtDP = (EditText) dialog.findViewById(R.id.txtDescpProducto);
+                txtPP = (EditText) dialog.findViewById(R.id.txtDescpProducto);
+
+                View btnAdd = dialog.findViewById(R.id.btn_ok);
+                View btnCancel = dialog.findViewById(R.id.btn_cancel);
+
+                btnAdd.setOnClickListener(onConfirmListener(txtNP, txtDP, txtPP, dialog));
+                btnCancel.setOnClickListener(onCancelListener(dialog));
+
+                dialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener onConfirmListener(final EditText txtNP,final EditText txtDP, final EditText txtPP,final Dialog dialog){
+        return new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Producto producto = new Producto();
+                producto.setNombreP(txtNP.getText().toString());
+                producto.setDescripcion((txtDP.getText().toString()));
+                producto.setPrecio(txtPP.getText().toString());
+
+                listProduct.add(producto);
+                adapter.notify();
+                dialog.dismiss();
+            }
+        };
+    }
+
+    private View.OnClickListener onCancelListener(final Dialog dialog) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        };
+    }
+
 }

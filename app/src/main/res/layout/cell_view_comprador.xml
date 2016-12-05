@@ -43,13 +43,14 @@ android:layout_marginBottom="6dp">
                 android:layout_alignParentEnd="true"
                 android:id="@+id/product_precio"/>
 
-            <CheckBox
-                android:text="selling"
+            <Switch
+                android:text="Switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
+                android:layout_alignRight="@+id/product_precio"
                 android:layout_alignEnd="@+id/product_precio"
-                android:id="@+id/checkBox" />
+                android:id="@+id/switch1" />
 
         </RelativeLayout>
     </LinearLayout>
