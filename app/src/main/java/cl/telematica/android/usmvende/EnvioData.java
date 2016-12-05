@@ -9,6 +9,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.StringTokenizer;
 
+import cl.telematica.android.usmvende.Models.BaseDatosSqlite;
 import cl.telematica.android.usmvende.Models.Producto;
 import cl.telematica.android.usmvende.Vistas.RegistroProducto;
 
@@ -44,6 +47,8 @@ public class EnvioData {
     public EnvioData(String Nprod, Activity activity) {
         this.Nprod = Nprod;
         this.activity = activity;
+        //this.Nseller = consulta(this.activity);
+        this.Nseller = "gsgsgs";
     }
     public EnvioData(String Nprod, String Nprecio, String Ndescp, Activity activity){
         this.Nprod = Nprod;
@@ -66,7 +71,11 @@ public class EnvioData {
 
         }
         //Toast.makeText(this, "Ejecutando hilo..", Toast.LENGTH_LONG).show();
-        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender",this.Nseller, Double.toString(mlatitude), Double.toString(mlongitude));
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender",this.Nseller,"","","", Double.toString(mlatitude), Double.toString(mlongitude));
+    }
+
+    public void sendRegister(){
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/nuevo_producto",this.Nseller,this.Nprod,this.Nprecio,this.Ndescp,"","");
     }
 
     private void actualizarUbicacion(Location location) {
@@ -121,9 +130,13 @@ public class EnvioData {
     }
 
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
-    public String POST(String targeturl,String Nvendedor,String gps) {
+    public String POST(String targeturl,String Nvendedor,String Nprod, String Nprecio,String Ndescp, String gps) {
         String result = "";
         String json = "";
+        StringTokenizer tokens = new StringTokenizer(targeturl, "/");
+        String first = tokens.nextToken();
+        String second = tokens.nextToken();
+        String third = tokens.nextToken();
         StringBuffer response = new StringBuffer();
         try {
             URL url = new URL(targeturl);
@@ -137,10 +150,27 @@ public class EnvioData {
 
             // build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("user", Nvendedor);
+            if (third.trim().equals("nuevo_producto")) {
+                jsonObject.put("producto", Nprod);
+                jsonObject.put("descripcion", Ndescp);
+                jsonObject.put("precio", Nprecio);
+                jsonObject.put("vendedor", Nvendedor);
+            }
+            else if (third.trim().equals("vender")) {
+                jsonObject.put("vendedor", Nvendedor);
+                System.out.println(gps);
+                //jsonObject.put("producto", Nprod);
+                jsonObject.put("gps",gps);
+            }
+            else {
+            }
+            /*
+            // build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("vendedor", Nvendedor);
             //jsonObject.put("producto", Nproducto);
             jsonObject.put("gps", gps);
-
+            */
             //convert JSONObject to JSON to String
             json = jsonObject.toString();
             System.out.println(json);
@@ -171,12 +201,11 @@ public class EnvioData {
     public class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
-            //"http://usmvende.telprojects.xyz/vender", this.Nprod,this.Nseller,this.Ndescp,this.Nprecio, Double.toString(mlatitude), Double.toString(mlongitude)
             String gps;
-            gps = urls[2]+","+urls[3];
-
-            //return POST(urls[0],urls[1],urls[2],urls[3],urls[4],gps);
-            return POST(urls[0],urls[1],gps);
+            gps = urls[5]+","+urls[6];
+            return POST(urls[0],urls[1],urls[2],urls[3],urls[4],gps);
+            //gps = urls[2]+","+urls[3];
+            //return POST(urls[0],urls[1],gps);
         }
 
         // onPostExecute displays the results of the AsyncTask.
@@ -196,4 +225,34 @@ public class EnvioData {
 
         }
     }//Asynctask
+    public String consulta(Context mcontext){
+        BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
+        SQLiteDatabase db = dbInstance.getWritableDatabase();
+        String user="";
+        if(db != null){
+            db.beginTransaction(); //inicializo al inicio del for donde hago las inserciones sin abrir ni cerrar la base de datos
+            try{
+                Cursor c = db.rawQuery("SELECT Usuario_actual from Logins", null);
+                if (c.moveToFirst()) {  //Nos aseguramos de que existe al menos un registro
+                    int i= 1;
+                    do {  //Recorremos el cursor hasta que no haya más registros
+                        user = c.getString(0);
+                        i= i + 1;
+                    } while(c.moveToNext());
+
+                }
+                else {
+                    Toast.makeText(mcontext, "No existe usuario logueado", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            //luego al final fuera del for cuando termine
+            finally {
+                db.setTransactionSuccessful();
+            }
+            db.endTransaction();
+            db.close();
+        }
+        return user;
+    }
 }
