@@ -1,22 +1,15 @@
 package cl.telematica.android.usmvende.Vistas;
 
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cl.telematica.android.usmvende.Adapters.PagerAdapter;
-import cl.telematica.android.usmvende.HttpServerConnection;
 import cl.telematica.android.usmvende.Models.Producto;
-import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
 import cl.telematica.android.usmvende.R;
 
 

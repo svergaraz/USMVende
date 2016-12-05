@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.ParseException;
 import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -21,6 +23,9 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
 
@@ -39,21 +44,21 @@ import cl.telematica.android.usmvende.Interfaces.LocationView;
 import cl.telematica.android.usmvende.R;
 import cl.telematica.android.usmvende.Models.Producto;
 
-public class RegistroProducto extends AppCompatActivity implements View.OnClickListener, LocationView {
+public class RegistroProducto extends AppCompatActivity implements View.OnClickListener{ //LocationView
 
     EditText txtNP, txtDP, txtPP, txtNV;
     //Button btnRP, btnVP;
     Button btnRP;
     Switch mySwitch;
-    TextView tvIsConnected;
-    TextView mLatitudeData;
-    TextView mLongitudeData;
+    //TextView tvIsConnected;
+    //TextView mLatitudeData;
+    //TextView mLongitudeData;
     TextView switchStatus;
-
+    double mlatitude=0.0, mlongitude=0.0;
     Producto person;
     String NP, DP, PP, NV;
     //Location location; // para guardar una lectura de coordenadas obtenida por el proveedor
-    LocationPresenterImpl mLocationPresenter; //para hacer uso de algunos metodos
+    //LocationPresenterImpl mLocationPresenter; //para hacer uso de algunos metodos
     LocationManager locationManager; //para pasarle un servicio de localizacion
     //Boolean gpsactivo = false;
     Context mcontext;
@@ -100,21 +105,22 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_registro_producto);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
-        mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
+        //mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
         mcontext = this;
-        mLatitudeData = (TextView) findViewById(R.id.latitudeData);
-        mLongitudeData = (TextView) findViewById(R.id.longitudeData);
+
+        //mLatitudeData = (TextView) findViewById(R.id.latitudeData);
+        //mLongitudeData = (TextView) findViewById(R.id.longitudeData);
         //Obtenemos una referencia a los controles de la interfaz
         txtNP = (EditText) findViewById(R.id.txtNombreProducto);
         txtDP = (EditText) findViewById(R.id.txtDescpProducto);
         txtPP = (EditText) findViewById(R.id.txtPrecioProducto);
         txtNV = (EditText) findViewById(R.id.txtNombreVendedor);
-        tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
+        //tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
         btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
         //btnVP = (Button) findViewById(R.id.btnVenderProducto);
         switchStatus= (TextView) findViewById(R.id.status);
         mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
-
+        /*
         // check if you are connected or not
         if (isConnected()) {
             tvIsConnected.setBackgroundColor(0xFF00CC00);
@@ -122,6 +128,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         } else {
             tvIsConnected.setText("You are NOT connected");
         }
+        */
         // add click listener to Button "POST"
         btnRP.setOnClickListener(this);
         //btnVP.setOnClickListener(this);
@@ -137,20 +144,23 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 if(isChecked){
                     switchStatus.setText("Vendiendo");
                     switchStatus.setBackgroundColor(0xFF00CC00);
-                    String Long;
-                    String Lati;
+                    //String Long;
+                    //String Lati;
                     if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        showPermissionErrorMsg();
                         return;
                     }
                     else
                     {
+                        /*
                         //Toast.makeText(this, "Obteniendo localizacion...", Toast.LENGTH_LONG).show();
                         Lati=mLatitudeData.getText().toString();
                         Long=mLongitudeData.getText().toString();
+                        */
+                        miUbicacion();
+
                     }
                     //Toast.makeText(this, "Ejecutando hilo..", Toast.LENGTH_LONG).show();
-                    new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender", NP, DP, PP, NV,Lati,Long);
+                    new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender", NP, DP, PP, NV, Double.toString(mlatitude),Double.toString(mlongitude));
                 }else{
                     switchStatus.setText("No Vendiendo");
                     switchStatus.setBackgroundColor(0xFFFF0000);
@@ -179,7 +189,55 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         }
 
     }
+    private void actualizarUbicacion(Location location) {
+        if (location != null) {
+            mlatitude = location.getLatitude();
+            mlongitude = location.getLongitude();
+        }
 
+    }
+    LocationListener loclistener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            actualizarUbicacion(location);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+    private void miUbicacion() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
+            //mensaje error e indicar que se encienda gps o internet
+            Toast.makeText(this,"Proveedores desactivados, Habilite GPS ",Toast.LENGTH_LONG).show();
+        }
+        else{
+            if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                actualizarUbicacion(location);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,15000,0,loclistener);
+            }
+
+        }
+
+    }
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
     public static String POST(String targeturl, Producto person) {
         String result = "";
@@ -256,7 +314,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         else
             return true;
     }//Validate
-
+    /*
     // Metodo para saber si huboo conexion exitosa o no cn el servidor
     public boolean isConnected() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
@@ -278,24 +336,37 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         inputStream.close();
         return result;
     }//convertInpuntStreamToString
+    */
 
     //Metodo de ciclo vida del activity principal Registrar Producto
     @Override
     public void onResume(){
         super.onResume();
-        mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
+        if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        actualizarUbicacion(location);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,15000,0,loclistener);
+        //mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
         Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
+        //mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
+        if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+            return;
+        }
+        locationManager.removeUpdates(loclistener);
         Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
     }
 
 
-
+    /*
     //Metodos de LocationView
     @Override
     public void showLocationErrorMsg() {
@@ -318,4 +389,5 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     public void manageStatusChange(String provider, int status) {
         Toast.makeText(this, getString(R.string.status_msg) + "--> Provider: " + provider + " Status: " + status, Toast.LENGTH_LONG).show();
     }
+    */
 }

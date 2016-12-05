@@ -101,7 +101,7 @@ public class Registro extends AppCompatActivity {
         protected void onPostExecute(String result) {
             //result="ok";
             Log.d("PERRAREGISTRO",result);
-            if(result.equals("\"True\"")){
+            if(result.equals("True")){
                 Toast.makeText(mcontext, "Registro realizado con exito", Toast.LENGTH_LONG).show();
             }
             else{
