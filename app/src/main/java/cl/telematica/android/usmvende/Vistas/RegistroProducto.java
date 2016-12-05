@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -90,13 +91,17 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            //if(result.equals("True")){
-            Toast.makeText(mcontext, "Datos Enviados!", Toast.LENGTH_LONG).show();
-            // }
-            // else
-            //{
-            // Toast.makeText(mcontext, "Error en envío de datos!", Toast.LENGTH_LONG).show();
-            //}
+            Log.d("RESPUESTA SERVIDOR DATO",result);
+            if(result.equals("True")){
+                Toast.makeText(mcontext, "Datos Enviados!", Toast.LENGTH_LONG).show();
+             }
+            else if(result.equals("False"))
+            {
+                Toast.makeText(mcontext, "Error en envío de datos!", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Toast.makeText(mcontext, "Recuerda ver esto", Toast.LENGTH_LONG).show();
+            }
 
         }
     }//Asynctask
@@ -305,14 +310,14 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     public void onResume(){
         super.onResume();
         mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
-        Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
-        Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
     }
 
 

@@ -197,18 +197,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private void miUbicacion() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) && !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
                     //mensaje error e indicar que se encienda gps o internet
-                    Toast.makeText(mContext,"Proveedores desactivados, Habilite GPS o Acceso a internet",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext,"Proveedores desactivados, Habilite GPS ",Toast.LENGTH_LONG).show();
         }
         else{
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
-            }
-            if(locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
-                Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                actualizarUbicacion(location);
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,15000,0,loclistener);
             }
             if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
                 Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);

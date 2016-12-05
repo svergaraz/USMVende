@@ -13,13 +13,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 
 import cl.telematica.android.usmvende.Models.BaseDatosSqlite;
 import cl.telematica.android.usmvende.R;
@@ -29,7 +33,7 @@ public class Login extends AppCompatActivity {
     EditText password,usermail;
     Button login, register;
     Context mcontext;
-
+    String token;
 
 
     @Override
@@ -41,14 +45,15 @@ public class Login extends AppCompatActivity {
         login = (Button)findViewById(R.id.login);
         register = (Button) findViewById(R.id.register);
         mcontext=this;
+        token = FirebaseInstanceId.getInstance().getToken();
         String logueado = setvalidacion(this);
         if (logueado != null){
-            Toast.makeText(this, "Usuario: "+logueado+"se encuentra logueado", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Usuario: "+logueado+" se encuentra logueado", Toast.LENGTH_LONG).show();
             Intent intent = new Intent(this,menu.class);
             startActivity(intent);
         }
         else{
-            Toast.makeText(this, "No existe usuario logueado, Ingrese sus datos", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No existe usuario logueado, Ingrese sus datos", Toast.LENGTH_SHORT).show();
         }
         register.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,12 +65,12 @@ public class Login extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HttpAsyncTask().execute("URL",usermail.getText().toString(),password.getText().toString());
+                new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/login",usermail.getText().toString(),password.getText().toString(),token);
             }
         });
     }
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
-    public static String POST(String targeturl,String user,String pass) {
+    public static String POST(String targeturl,String user,String pass,String token) {
         String result = "";
         String json = "";
         StringBuffer response = new StringBuffer();
@@ -81,8 +86,9 @@ public class Login extends AppCompatActivity {
 
             // build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("email",user);
+            jsonObject.put("user",user);
             jsonObject.put("pass",pass);
+            jsonObject.put("token",token);
 
             //convert JSONObject to JSON to String
             json = jsonObject.toString();
@@ -90,6 +96,7 @@ public class Login extends AppCompatActivity {
             OutputStream os = connection.getOutputStream();
             os.write(json.getBytes());
             os.flush();
+
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()));
             String inputLine;
@@ -158,13 +165,14 @@ public class Login extends AppCompatActivity {
     public class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
-            return POST(urls[0], urls[1],urls[2]);
+            return POST(urls[0], urls[1],urls[2],urls[3]);
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            result="ok";
-            if(result.equals("ok")){
+            //result="ok";
+            Log.d("PERRALOGIN",result);
+            if(result.equals("\"True\"")){
                 insertlogin(mcontext, usermail.getText().toString());
                 Login_correcto();
             }

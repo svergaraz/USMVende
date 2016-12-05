@@ -38,7 +38,7 @@ public class Registro extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HttpAsyncTask().execute("URL/registro",usermail.getText().toString(),password.getText().toString());
+                new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/registrar",usermail.getText().toString(),password.getText().toString());
             }
         });
     }
@@ -60,7 +60,7 @@ public class Registro extends AppCompatActivity {
 
             // build jsonObject
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("email",user);
+            jsonObject.put("user",user);
             jsonObject.put("pass",pass);
 
             //convert JSONObject to JSON to String
@@ -99,8 +99,9 @@ public class Registro extends AppCompatActivity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            result="ok";
-            if(result.equals("ok")){
+            //result="ok";
+            Log.d("PERRAREGISTRO",result);
+            if(result.equals("\"True\"")){
                 Toast.makeText(mcontext, "Registro realizado con exito", Toast.LENGTH_LONG).show();
             }
             else{
