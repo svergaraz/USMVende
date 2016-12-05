@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import cl.telematica.android.usmvende.EnvioData;
 import cl.telematica.android.usmvende.Models.Producto;
 import cl.telematica.android.usmvende.R;
 
@@ -23,7 +24,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
 
     private List<Producto> producto;
     private Activity activity;
-    //private String tab;
+    private int swValue ;
 
     public MyAdapterComprador(Activity activity, List<Producto> producto){
         this.producto = producto;
@@ -61,26 +62,31 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        Producto produc = producto.get(position);
+        final Producto produc = producto.get(position);
         holder.productName.setText(produc.getNombreP());
        // holder.productDesc.setText(produc.getDescripcion());
         holder.productPrecio.setText(produc.getPrecio());
         holder.container.setOnClickListener(onClickListener(position));
-        holder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    sendItemInf(pos, isChecked);
-                }
-                else{
+        if(swValue == 1){
+            holder.sw.setClickable(false);
+        }
+        else {
+            holder.sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        EnvioData envio = new EnvioData(produc.getNombreP(),
+                                produc.getDescripcion(),
+                                produc.getPrecio(), activity);
+                        envio.send();
+
+                    }
 
                 }
-            }
-        });
-
+            });
+        }
     }
 
-    private void sendItemInf(int position, )
     private View.OnClickListener onClickListener(final int position) {
         return new View.OnClickListener() {
             @Override
@@ -120,10 +126,13 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
 
         };
     }
+
    /* @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }*/
-
+    public void setSwitch(int swValue){
+        this.swValue = swValue;
+    }
 
 }

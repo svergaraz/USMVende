@@ -78,6 +78,7 @@ public class BlankFragment extends Fragment{
 
                     // specify an adapter (see also next example)
                     MyAdapterComprador adapter = new MyAdapterComprador(getActivity() , getListProduct(result));
+                    //adapter.setSwitch(1);
                     rv.setAdapter(adapter);
                 }
             }

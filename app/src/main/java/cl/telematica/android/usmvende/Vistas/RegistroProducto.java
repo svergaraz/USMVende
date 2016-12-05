@@ -45,16 +45,16 @@ import cl.telematica.android.usmvende.Interfaces.LocationView;
 import cl.telematica.android.usmvende.R;
 import cl.telematica.android.usmvende.Models.Producto;
 
-public class RegistroProducto extends AppCompatActivity implements View.OnClickListener, LocationView {
+public class RegistroProducto extends AppCompatActivity{
 
     EditText txtNP, txtDP, txtPP, txtNV;
-    //Button btnRP, btnVP;
+    /*Button btnRP, btnVP;
     Button btnRP;
     Switch mySwitch;
     TextView tvIsConnected;
     TextView mLatitudeData;
     TextView mLongitudeData;
-    TextView switchStatus;
+    TextView switchStatus;*/
 
     /*______________________________________________*/
     private RecyclerView recyclerView;
@@ -65,8 +65,8 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     Producto person;
     String NP, DP, PP, NV;
     //Location location; // para guardar una lectura de coordenadas obtenida por el proveedor
-    LocationPresenterImpl mLocationPresenter; //para hacer uso de algunos metodos
-    LocationManager locationManager; //para pasarle un servicio de localizacion
+    //LocationPresenterImpl mLocationPresenter; //para hacer uso de algunos metodos
+    //LocationManager locationManager; //para pasarle un servicio de localizacion
     //Boolean gpsactivo = false;
     Context mcontext;
 
@@ -74,7 +74,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     //String receive = (String) ix.getStringExtra("topic");
 
     //CLASE que extiende de AsyncTask para que en segundo plano conecte con el servidor y localice posicion
-    public class HttpAsyncTask extends AsyncTask<String, Void, String> {
+    /*public class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
             person = new Producto();
@@ -104,7 +104,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
             }
 
         }
-    }//Asynctask
+    }//Asynctask*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,21 +125,21 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         fab.setOnClickListener(onAddingListener());
         /*____________________________________*/
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
-        mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
-        mcontext = this;
-        mLatitudeData = (TextView) findViewById(R.id.latitudeData);
-        mLongitudeData = (TextView) findViewById(R.id.longitudeData);
+        //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
+        //mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
+        //mcontext = this;
+        //mLatitudeData = (TextView) findViewById(R.id.latitudeData);
+        //mLongitudeData = (TextView) findViewById(R.id.longitudeData);
         //Obtenemos una referencia a los controles de la interfaz
         /*txtNP = (EditText) findViewById(R.id.txtNombreProducto);
         txtDP = (EditText) findViewById(R.id.txtDescpProducto);
         txtPP = (EditText) findViewById(R.id.txtPrecioProducto);
         txtNV = (EditText) findViewById(R.id.txtNombreVendedor);*/
-        tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
-        btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
+        //tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
+        //btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
         //btnVP = (Button) findViewById(R.id.btnVenderProducto);
-        switchStatus= (TextView) findViewById(R.id.status);
-        mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
+        //switchStatus= (TextView) findViewById(R.id.status);
+        //mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
 
         // check if you are connected or not
         /*if (isConnected()) {
@@ -151,7 +151,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         // add click listener to Button "POST"
        // btnRP.setOnClickListener(this);
         //btnVP.setOnClickListener(this);
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        /*mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String NP, DP, PP, NV;
@@ -182,11 +182,11 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                     switchStatus.setBackgroundColor(0xFFFF0000);
                 }
             }
-        });
+        });*/
     }
 
     // Metodo encargado de la implementacion de los botones y la obtencion de datos
-    @Override
+  /*  @Override
     public void onClick(View v) {
         String NP, DP, PP, NV;
         NP = txtNP.getText().toString();
@@ -204,10 +204,10 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 break;
         }
 
-    }
+    }*/
 
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
-    public static String POST(String targeturl, Producto person) {
+    /*public static String POST(String targeturl, Producto person) {
         String result = "";
         String json = "";
         StringTokenizer tokens = new StringTokenizer(targeturl, "/");
@@ -266,11 +266,11 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
 
 
         return response.toString();
-    }//POST
+    }//POST*/
 
 
     //Metodo para asegurarse de que no se envie info en vacia
-    private boolean validate() {
+    /*private boolean validate() {
         if (txtNP.getText().toString().trim().equals(""))
             return false;
         else if (txtDP.getText().toString().trim().equals(""))
@@ -281,20 +281,20 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
             return false;
         else
             return true;
-    }//Validate
+    }//Validate*/
 
     // Metodo para saber si huboo conexion exitosa o no cn el servidor
-    public boolean isConnected() {
+  /*  public boolean isConnected() {
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected())
             return true;
         else
             return false;
-    }//isConnected
+    }//isConnected*/
 
     //Metodo para convertir stream respuesta del servidor en string
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+  /*  private static String convertInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         String line = "";
         String result = "";
@@ -303,25 +303,25 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
 
         inputStream.close();
         return result;
-    }//convertInpuntStreamToString
+    }//convertInpuntStreamToString*/
 
     //Metodo de ciclo vida del activity principal Registrar Producto
     @Override
     public void onResume(){
         super.onResume();
-        mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
-        Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
+        //mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
+        //Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
-        Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
+        //mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
+        //Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
     }
 
 
-
+/*
     //Metodos de LocationView
     @Override
     public void showLocationErrorMsg() {
@@ -344,7 +344,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     public void manageStatusChange(String provider, int status) {
         Toast.makeText(this, getString(R.string.status_msg) + "--> Provider: " + provider + " Status: " + status, Toast.LENGTH_LONG).show();
     }
-
+    */
     private View.OnClickListener onAddingListener(){
         return new View.OnClickListener() {
             @Override
@@ -357,7 +357,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 // set the custom dialog components - texts and image
                 txtNP = (EditText) dialog.findViewById(R.id.txtNombreProducto);
                 txtDP = (EditText) dialog.findViewById(R.id.txtDescpProducto);
-                txtPP = (EditText) dialog.findViewById(R.id.txtDescpProducto);
+                txtPP = (EditText) dialog.findViewById(R.id.txtPrecioProducto);
 
                 View btnAdd = dialog.findViewById(R.id.btn_ok);
                 View btnCancel = dialog.findViewById(R.id.btn_cancel);
@@ -381,7 +381,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                 producto.setPrecio(txtPP.getText().toString());
 
                 listProduct.add(producto);
-                adapter.notify();
+                adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
         };
