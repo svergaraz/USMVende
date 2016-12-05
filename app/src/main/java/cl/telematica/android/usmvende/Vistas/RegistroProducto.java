@@ -64,7 +64,7 @@ public class RegistroProducto extends AppCompatActivity {
     /*______________________________________________*/
     private RecyclerView recyclerView;
     private MyAdapterComprador adapter;
-    private ArrayList<Producto> listProduct;
+    private List<Producto> listProduct;
     private FloatingActionButton fab;
     /*______________________________________________*/
 
@@ -106,7 +106,8 @@ public class RegistroProducto extends AppCompatActivity {
                 if (result != null) {
                     System.out.println(result);
                     // specify an adapter (see also next example)
-                    adapter = new MyAdapterComprador(activity, getListProduct(result));
+                    listProduct = getListProduct(result);
+                    adapter = new MyAdapterComprador(activity, listProduct);
                     adapter.setSwitch(0);
                     recyclerView.setAdapter(adapter);
                 }
@@ -260,8 +261,8 @@ public class RegistroProducto extends AppCompatActivity {
                 producto.setDescripcion((txtDP.getText().toString()));
                 producto.setPrecio(txtPP.getText().toString());
                 EnvioData envioData = new EnvioData(producto.getNombreP(),
-                                                    producto.getDescripcion(),
                                                     producto.getPrecio(),
+                                                    producto.getDescripcion(),
                                                     activity);
                 envioData.sendRegister();
                 listProduct.add(producto);
