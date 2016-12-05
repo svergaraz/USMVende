@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -31,6 +33,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -42,25 +46,27 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.lang.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
+import cl.telematica.android.usmvende.Models.BaseDatosSqlite;
 import cl.telematica.android.usmvende.Presenters.LocationPresenterImpl;
 import cl.telematica.android.usmvende.Interfaces.LocationView;
 import cl.telematica.android.usmvende.R;
 import cl.telematica.android.usmvende.Models.Producto;
 
-public class RegistroProducto extends AppCompatActivity implements View.OnClickListener{ //LocationView
+public class RegistroProducto extends AppCompatActivity { //LocationView
 
     EditText txtNP, txtDP, txtPP, txtNV;
     //Button btnRP, btnVP;
-    Button btnRP;
-    Switch mySwitch;
+    //Button btnRP;
+    //Switch mySwitch;
     //TextView tvIsConnected;
     //TextView mLatitudeData;
     //TextView mLongitudeData;
     TextView switchStatus;
-    double mlatitude=0.0, mlongitude=0.0;
+    double mlatitude = 0.0, mlongitude = 0.0;
 
 
     /*______________________________________________*/
@@ -70,18 +76,19 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     private FloatingActionButton fab;
     /*______________________________________________*/
 
-    Producto person;
+    //Producto person;
     String NP, DP, PP, NV;
     //Location location; // para guardar una lectura de coordenadas obtenida por el proveedor
     //LocationPresenterImpl mLocationPresenter; //para hacer uso de algunos metodos
-    LocationManager locationManager; //para pasarle un servicio de localizacion
+    //LocationManager locationManager; //para pasarle un servicio de localizacion
     //Boolean gpsactivo = false;
     Context mcontext;
-
+    Activity activity;
     //Intent ix = getIntent();
     //String receive = (String) ix.getStringExtra("topic");
 
     //CLASE que extiende de AsyncTask para que en segundo plano conecte con el servidor y localice posicion
+    /*
     public class HttpAsyncTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... urls) {
@@ -112,13 +119,14 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         }
 
     }
-}//Asynctask
+}//Asynctask */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_registro_producto);
-
+        mcontext = this;
+        activity = this;
         /*____________________________________*/
         setContentView(R.layout.act_rg_pro);
         recyclerView = (RecyclerView) findViewById(R.id.recyle_view);
@@ -128,15 +136,15 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         //setRecyclerViewData();
-        adapter = new MyAdapterComprador (this, listProduct);
+
         recyclerView.setLayoutManager(layoutManager);
 
         fab.setOnClickListener(onAddingListener());
         /*____________________________________*/
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
+        //locationManager = (LocationManager) getSystemService(LOCATION_SERVICE); //le doy el control sobre los servicios de localizacion que tenga el dispositivo
         //mLocationPresenter = new LocationPresenterImpl(this,locationManager,this); //
-        mcontext = this;
+        //mcontext = this;
 
         //mLatitudeData = (TextView) findViewById(R.id.latitudeData);
         //mLongitudeData = (TextView) findViewById(R.id.longitudeData);
@@ -150,10 +158,10 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         */
         //tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
 
-        btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
+        //btnRP = (Button) findViewById(R.id.btnRegistrarProducto);
         //btnVP = (Button) findViewById(R.id.btnVenderProducto);
         //switchStatus= (TextView) findViewById(R.id.status);
-        mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
+        //mySwitch = (Switch) findViewById(R.id.btnVenderProducto);
         /*
         // check if you are connected or not
         /*if (isConnected()) {
@@ -163,13 +171,125 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
             tvIsConnected.setText("You are NOT connected");
         }
         */
+        AsyncTask<String, Void, String> task = new AsyncTask<String, Void, String>() {
 
+            @Override
+            protected String doInBackground(String... params) {
+                String result = POST("http://usmvende.telprojects.xyz/vendedor", consulta(mcontext));
+                return result;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                System.out.println(result);
+                if (result != null) {
+                    System.out.println(result);
+                    // specify an adapter (see also next example)
+                    adapter = new MyAdapterComprador(activity, getListProduct(result));
+                    recyclerView.setAdapter(adapter);
+                }
+            }
+        };
+        task.execute();
+    }
+    public String consulta(Context mcontext){
+        BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
+        SQLiteDatabase db = dbInstance.getWritableDatabase();
+        String user="";
+        if(db != null){
+            db.beginTransaction(); //inicializo al inicio del for donde hago las inserciones sin abrir ni cerrar la base de datos
+            try{
+                Cursor c = db.rawQuery("SELECT Usuario_actual from Logins", null);
+                if (c.moveToFirst()) {  //Nos aseguramos de que existe al menos un registro
+                    int i= 1;
+                    do {  //Recorremos el cursor hasta que no haya más registros
+                        user = c.getString(0);
+                        i= i + 1;
+                    } while(c.moveToNext());
+
+                }
+                else {
+                    Toast.makeText(mcontext, "No existe usuario logueado", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            //luego al final fuera del for cuando termine
+            finally {
+                db.setTransactionSuccessful();
+            }
+            db.endTransaction();
+            db.close();
         }
+        return user;
+    }
+    //Metodo que realiza la conexion y procesa los datos de envio y recibo
+    public static String POST(String targeturl, String msg) {
+        String result = "";
+        String json = "";
+        StringBuffer response = new StringBuffer();
+        try {
+            URL url = new URL(targeturl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setConnectTimeout(5000);
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
+            OutputStream os = connection.getOutputStream();
+            os.write(msg.getBytes());
+            os.flush();
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            connection.disconnect();
+
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+        return response.toString();
+    }//POST
+
+    public List<Producto> getListProduct(String result){
+        List<Producto> listaProducto = new ArrayList<Producto>();
+
+        try {
+            JSONArray lista = new JSONArray(result);
+
+            int size = lista.length();
+            for(int i = 0; i < size; i++){
+                Producto producto = new Producto();
+                JSONObject objeto = lista.getJSONObject(i);
+
+                producto.setNombreP(objeto.getString("producto"));
+                producto.setNombreV(null);
+                producto.setPrecio(objeto.getString("precio"));
+                producto.setDescripcion(objeto.getString("descripcion"));
+                producto.setSell(objeto.getString("vendiendo"));
+                producto.setFav(null);
+
+                listaProducto.add(producto);
+            }
+            return listaProducto;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return listaProducto;
+        }
+    }
         // add click listener to Button "POST"
        // btnRP.setOnClickListener(this);
         //btnVP.setOnClickListener(this);
-
+        /*
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -189,11 +309,10 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                     }
                     else
                     {
-                        /*
+
                         //Toast.makeText(this, "Obteniendo localizacion...", Toast.LENGTH_LONG).show();
                         Lati=mLatitudeData.getText().toString();
                         Long=mLongitudeData.getText().toString();
-                        */
                         miUbicacion();
 
                     }
@@ -204,11 +323,10 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
                     switchStatus.setBackgroundColor(0xFFFF0000);
                 }
             }
-
         });
     }
 
-
+    /*
     // Metodo encargado de la implementacion de los botones y la obtencion de datos
     @Override
     public void onClick(View v) {
@@ -258,6 +376,8 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
 
         }
     };
+    */
+    /*
     private void miUbicacion() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ){
@@ -278,6 +398,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         }
 
     }
+    */
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
     public static String POST(String targeturl, Producto person) {
         String result = "";
@@ -340,7 +461,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         return response.toString();
     }//POST
 
-
+    /*
     //Metodo para asegurarse de que no se envie info en vacia
     private boolean validate() {
         if (txtNP.getText().toString().trim().equals(""))
@@ -354,6 +475,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         else
             return true;
     }//Validate
+    */
     /*
     // Metodo para saber si huboo conexion exitosa o no cn el servidor
     public boolean isConnected() {
@@ -379,9 +501,11 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
     */
 
     //Metodo de ciclo vida del activity principal Registrar Producto
+
     @Override
     public void onResume(){
         super.onResume();
+        /*
         if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
             return;
@@ -391,11 +515,13 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,15000,0,loclistener);
         //mLocationPresenter.startUpdates(); //metodo que permite iniciar busquead de localizaciones medidas por el proveedor
         Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
+        */
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        /*
         //mLocationPresenter.stopUpdates();//metodo que detiene la busqueda de localizaciones medidas por el proveedor
         if (ActivityCompat.checkSelfPermission(mcontext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
@@ -403,6 +529,7 @@ public class RegistroProducto extends AppCompatActivity implements View.OnClickL
         }
         locationManager.removeUpdates(loclistener);
         Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
+        */
     }
 
 
