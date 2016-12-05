@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
+            <!--
             <TextView
                 android:id="@+id/tvIsConnected"
                 android:layout_width="wrap_content"
@@ -28,6 +29,7 @@
                 android:textSize="18dp"
                 android:layout_marginBottom="5dp"
                 android:text="is connected?" />
+                -->
 
             <TextView
                 android:id="@+id/lblNombreProducto"
@@ -100,7 +102,7 @@
                     android:textOn="on"
                     android:textOff="off"
                     android:checked="false" />
-
+                <!--
                 <TextView
                     android:id="@+id/status"
                     android:layout_width="wrap_content"
@@ -109,17 +111,8 @@
                     android:textColor="#FFF"
                     android:textSize="20dp"
                     android:text="is selling?" />
+                    -->
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/latitudeData"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:id="@+id/longitudeData"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
         </LinearLayout>
     </ScrollView>

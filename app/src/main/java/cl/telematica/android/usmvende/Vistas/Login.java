@@ -172,7 +172,7 @@ public class Login extends AppCompatActivity {
         protected void onPostExecute(String result) {
             //result="ok";
             Log.d("PERRALOGIN",result);
-            if(result.equals("\"True\"")){
+            if(result.equals("True")){
                 insertlogin(mcontext, usermail.getText().toString());
                 Login_correcto();
             }

@@ -67,6 +67,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
        // holder.productDesc.setText(produc.getDescripcion());
         holder.productPrecio.setText(produc.getPrecio());
         holder.container.setOnClickListener(onClickListener(position));
+
         if(swValue == 1){
             holder.sw.setClickable(false);
         }
@@ -76,8 +77,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         EnvioData envio = new EnvioData(produc.getNombreP(),
-                                produc.getDescripcion(),
-                                produc.getPrecio(), activity);
+                                 activity);
                         envio.send();
 
                     }

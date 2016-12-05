@@ -12,7 +12,7 @@ public class Producto/* implements Parcelable*/ {
     private String localizacion;
     private String topic;
     private String fav;
-    private int sell;
+    private String sell;
 
     public void setNombreP(String nombre){
         this.nombreP = nombre;
@@ -66,10 +66,10 @@ public class Producto/* implements Parcelable*/ {
     }
     public String getFav(){return fav;}
 
-    public void setSell(int sell){
+    public void setSell(String sell){
         this.sell = sell;
     }
-    public int getSell(){return sell;}
+    public String getSell(){return sell;}
 
    /* public Producto(Parcel parcel){
         nombreP=parcel.readString();
