@@ -95,8 +95,8 @@ public class RegistroProducto extends AppCompatActivity {
 
             @Override
             protected String doInBackground(String... params) {
-                //String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+consulta(mcontext)+"\"");
-                String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+"gsgsgs"+"\"");
+                String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+consulta(mcontext)+"\"");
+                //String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+"gsgsgs"+"\"");
                 return result;
             }
 

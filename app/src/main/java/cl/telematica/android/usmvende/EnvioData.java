@@ -47,14 +47,15 @@ public class EnvioData {
     public EnvioData(String Nprod, Activity activity) {
         this.Nprod = Nprod;
         this.activity = activity;
-        //this.Nseller = consulta(this.activity);
-        this.Nseller = "gsgsgs";
+        this.Nseller = consulta(this.activity);
+        //this.Nseller = "gsgsgs";
     }
     public EnvioData(String Nprod, String Nprecio, String Ndescp, Activity activity){
         this.Nprod = Nprod;
         this.Nprecio = Nprecio;
         this.Ndescp = Ndescp;
         this.activity = activity;
+        this.Nseller = consulta(this.activity);
     }
     public void send() {
 
