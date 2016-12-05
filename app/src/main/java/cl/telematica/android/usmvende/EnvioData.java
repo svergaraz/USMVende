@@ -34,8 +34,8 @@ import cl.telematica.android.usmvende.Vistas.RegistroProducto;
 public class EnvioData {
     private String Nprod;
     private String Nseller;
-    //private String Nprecio;
-    //private String Ndescp;
+    private String Nprecio;
+    private String Ndescp;
 
     private Activity activity;
     public double mlatitude = 0.0;
@@ -43,11 +43,14 @@ public class EnvioData {
 
     public EnvioData(String Nprod, Activity activity) {
         this.Nprod = Nprod;
-        //this.Ndescp = Ndescp;
-        //this.Nprecio = Nprecio;
         this.activity = activity;
     }
-
+    public EnvioData(String Nprod, String Nprecio, String Ndescp, Activity activity){
+        this.Nprod = Nprod;
+        this.Nprecio = Nprecio;
+        this.Ndescp = Ndescp;
+        this.activity = activity;
+    }
     public void send() {
 
         LocationManager locationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
