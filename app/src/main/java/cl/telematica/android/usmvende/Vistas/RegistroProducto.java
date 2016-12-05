@@ -95,8 +95,8 @@ public class RegistroProducto extends AppCompatActivity {
 
             @Override
             protected String doInBackground(String... params) {
-                //String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+consulta(mcontext)+"\"");
-                String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+"gsgsgs"+"\"");
+                String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+consulta(mcontext)+"\"");
+                //String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+"gsgsgs"+"\"");
                 return result;
             }
 
@@ -260,8 +260,8 @@ public class RegistroProducto extends AppCompatActivity {
                 producto.setDescripcion((txtDP.getText().toString()));
                 producto.setPrecio(txtPP.getText().toString());
                 EnvioData envioData = new EnvioData(producto.getNombreP(),
-                                                    producto.getDescripcion(),
                                                     producto.getPrecio(),
+                                                    producto.getDescripcion(),
                                                     activity);
                 envioData.sendRegister();
                 listProduct.add(producto);
