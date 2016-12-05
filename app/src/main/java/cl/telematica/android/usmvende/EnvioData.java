@@ -1,5 +1,9 @@
 package cl.telematica.android.usmvende;
 
+
+import android.app.Activity;
+
+
 import android.*;
 import android.Manifest;
 import android.app.Activity;
@@ -28,7 +32,6 @@ import cl.telematica.android.usmvende.Vistas.RegistroProducto;
 
 
 public class EnvioData {
-
     private String Nprod;
     private String Nseller;
     //private String Nprecio;

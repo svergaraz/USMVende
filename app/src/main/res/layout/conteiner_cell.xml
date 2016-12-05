@@ -42,7 +42,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:id="@+id/product_precio2"/>
-zz
+
             <Button
                 android:text="Favorito"
                 android:layout_width="wrap_content"
