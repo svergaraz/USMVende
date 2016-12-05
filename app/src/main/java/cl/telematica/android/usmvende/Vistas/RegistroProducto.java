@@ -95,7 +95,8 @@ public class RegistroProducto extends AppCompatActivity {
 
             @Override
             protected String doInBackground(String... params) {
-                String result = POST("http://usmvende.telprojects.xyz/vendedor", consulta(mcontext));
+                //String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+consulta(mcontext)+"\"");
+                String result = POST("http://usmvende.telprojects.xyz/vendedor", "\""+"gsgsgs"+"\"");
                 return result;
             }
 
@@ -106,11 +107,14 @@ public class RegistroProducto extends AppCompatActivity {
                     System.out.println(result);
                     // specify an adapter (see also next example)
                     adapter = new MyAdapterComprador(activity, getListProduct(result));
+                    adapter.setSwitch(0);
                     recyclerView.setAdapter(adapter);
                 }
             }
         };
         task.execute();
+
+
     }
     public String consulta(Context mcontext){
         BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
@@ -140,6 +144,7 @@ public class RegistroProducto extends AppCompatActivity {
             db.endTransaction();
             db.close();
         }
+        Log.d("USUARIO CONSULTA REG",user);
         return user;
     }
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
@@ -219,7 +224,7 @@ public class RegistroProducto extends AppCompatActivity {
     public void onPause() {
         super.onPause();
     }
-    
+
 
 
     private View.OnClickListener onAddingListener(){
