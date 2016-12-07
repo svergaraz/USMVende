@@ -25,10 +25,16 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
     private List<Producto> producto;
     private Activity activity;
     private int swValue ;
+    String mlatitude="buscando",mlongitude="buscando";
 
     public MyAdapterComprador(Activity activity, List<Producto> producto){
         this.producto = producto;
         this.activity = activity;
+    }
+
+    public void actualizarUbicacion(String lat, String lng){
+            this.mlatitude = lat;
+            this.mlongitude = lng;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -76,10 +82,14 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-                        EnvioData envio = new EnvioData(produc.getNombreP(),
-                                 activity);
-                        envio.send();
+                        EnvioData envio = new EnvioData(produc.getNombreP(), activity);
+                        System.out.println(mlatitude+","+mlongitude);
+                        envio.send(mlatitude,mlongitude);
 
+                    }
+                    else{
+                        EnvioData envio2 = new EnvioData(produc.getNombreP(),activity);
+                        envio2.sendNovender();
                     }
 
                 }
@@ -93,7 +103,8 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
             public void onClick(View v) {
                 final Dialog dialog = new Dialog(activity);
                 dialog.setContentView(R.layout.conteiner_cell);
-                dialog.setTitle("Vendedor" + position);
+                //dialog.setTitle("Vendedor" + position);
+                dialog.setTitle(producto.get(position).getNombreV());
                 dialog.setCancelable(true);
 
                 TextView productName = (TextView) dialog.findViewById(R.id.product_name2);
@@ -116,10 +127,14 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (producto.get(position).getFav() == "NO") {
-                    producto.get(position).setFav("SI");
+                if (producto.get(position).getFav() == "0") {
+                    producto.get(position).setFav("1");
+                    EnvioData envio = new EnvioData(producto.get(position).getNombreP(),producto.get(position).getNombreV(), activity);
+                    envio.sendFav();
                 }
-                else {producto.get(position).setFav("NO");}
+                else {
+                    producto.get(position).setFav("0");
+                }
                 Toast.makeText(activity, producto.get(position).getFav(), Toast.LENGTH_SHORT).show();
             }
 

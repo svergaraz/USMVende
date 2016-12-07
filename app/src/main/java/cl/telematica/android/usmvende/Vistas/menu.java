@@ -2,6 +2,7 @@ package cl.telematica.android.usmvende.Vistas;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,10 +33,7 @@ import cl.telematica.android.usmvende.R;
 // Web API Key (usmvende) = AIzaSyDXuE44kGlHJiSDYfHY9SAdobTJ3PBPmsQ
 
 public class menu extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
-    //private BroadcastReceiver mRegistrationBroadcastReceiver;
     Button btnVender,btnComprar,cerrar_sesion;
-    public String token;
     Context mcontext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +47,7 @@ public class menu extends AppCompatActivity {
         btnVender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(menu.this,RegistroProducto.class);
+                Intent intent = new Intent(menu.this, RegistroProducto.class);
                 startActivity(intent);
             }
         });
@@ -57,7 +55,7 @@ public class menu extends AppCompatActivity {
         btnComprar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(menu.this,Comprador.class);
+                Intent intent = new Intent(menu.this, Comprador.class);
                 startActivity(intent);
             }
         });
@@ -65,12 +63,13 @@ public class menu extends AppCompatActivity {
         cerrar_sesion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(menu.this,Login.class);
+                Intent intent = new Intent(menu.this, Login.class);
+                new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/logout", "\"" + consulta(mcontext) + "\"");
                 BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
                 SQLiteDatabase db = dbInstance.getWritableDatabase();
-                if(db != null){
+                if (db != null) {
                     db.beginTransaction(); //inicializo al inicio del for donde hago las inserciones sin abrir ni cerrar la base de datos
-                    try{
+                    try {
                         db.execSQL("delete from Logins where 1");
                     }
                     //luego al final fuera del for cuando termine
@@ -81,35 +80,13 @@ public class menu extends AppCompatActivity {
                     db.close();
                 }
 
+
                 startActivity(intent);
+
             }
         });
-
-
-        token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Token: " + token);
-        Toast.makeText(menu.this, token, Toast.LENGTH_SHORT).show();
-
-        // [END handle_data_extras]
-        AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
-
-            @Override
-            protected String doInBackground(Void... params) {
-                   String result=POST("http://usmvende.telprojects.xyz/tokens",token);
-                   return result;
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                Toast.makeText(mcontext, "Token Enviado!", Toast.LENGTH_LONG).show();
-            }
-        };
-
-        task.execute();
-
-
-    }//task
-
+        Toast.makeText(mcontext, consulta(mcontext), Toast.LENGTH_SHORT).show();
+    }
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
     public static String POST(String targeturl, String msg) {
         String result = "";
@@ -125,15 +102,9 @@ public class menu extends AppCompatActivity {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // build jsonObject
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("token", msg);
 
-            //convert JSONObject to JSON to String
-            json = jsonObject.toString();
-            System.out.println(json);
             OutputStream os = connection.getOutputStream();
-            os.write(json.getBytes());
+            os.write(msg.getBytes());
             os.flush();
 
             BufferedReader in = new BufferedReader(
@@ -157,6 +128,60 @@ public class menu extends AppCompatActivity {
         return response.toString();
     }//POST
 
+    public String consulta(Context mcontext){
+        BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
+        SQLiteDatabase db = dbInstance.getWritableDatabase();
+        String user="";
+        if(db != null){
+            db.beginTransaction(); //inicializo al inicio del for donde hago las inserciones sin abrir ni cerrar la base de datos
+            try{
+                Cursor c = db.rawQuery("SELECT Usuario_actual from Logins", null);
+                if (c.moveToFirst()) {  //Nos aseguramos de que existe al menos un registro
+                    int i= 1;
+                    do {  //Recorremos el cursor hasta que no haya más registros
+                        user = c.getString(0);
+                        i= i + 1;
+                    } while(c.moveToNext());
+
+                }
+                else {
+                    Toast.makeText(mcontext, "NO hay sesion iniciada (CERRAR)", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            //luego al final fuera del for cuando termine
+            finally {
+                db.setTransactionSuccessful();
+            }
+            db.endTransaction();
+            db.close();
+        }
+        return user;
+    }
+    public class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            String result=POST(urls[0],urls[1]);
+            return result;
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.d("RESPUESTA SERVIDOR DATO",result);
+            if(result.equals("True")){
+                Toast.makeText(mcontext, "Sesion cerrada!", Toast.LENGTH_LONG).show();
+            }
+            else if(result.equals("False"))
+            {
+                Toast.makeText(mcontext, "Sesion cerrada no ha sido cerrada!", Toast.LENGTH_LONG).show();
+            }
+            else{
+                Toast.makeText(mcontext, "Recuerda ver esto", Toast.LENGTH_LONG).show();
+            }
+
+        }
+    }//Asynctask
 }
 
 

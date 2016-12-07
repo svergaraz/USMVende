@@ -70,7 +70,7 @@ public class BlankFragment2 extends Fragment{
 
             @Override
             protected String doInBackground(String... params) {
-                String result = POST("http://usmvende.telprojects.xyz/compradorfav", consulta(getContext()));
+                String result = POST("http://usmvende.telprojects.xyz/compradorfav", "\""+consulta(getContext())+"\"");
                 return result;
             }
 

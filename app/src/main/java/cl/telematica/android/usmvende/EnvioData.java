@@ -39,10 +39,11 @@ public class EnvioData {
     private String Nseller;
     private String Nprecio;
     private String Ndescp;
+    private String Nvendedor;
 
     private Activity activity;
-    public double mlatitude = 0.0;
-    public double mlongitude = 0.0;
+    //public double mlatitude = 0.0;
+    //public double mlongitude = 0.0;
 
     public EnvioData(String Nprod, Activity activity) {
         this.Nprod = Nprod;
@@ -57,27 +58,46 @@ public class EnvioData {
         this.activity = activity;
         this.Nseller = consulta(this.activity);
     }
-    public void send() {
+    //para favoritos
+    public EnvioData(String Nprod, String Nvendedor,Activity activity){
+        this.Nprod=Nprod;
+        this.Nseller = consulta(activity);
+        this.Nvendedor= Nvendedor;
+        this.activity = activity;
+    }
 
-        LocationManager locationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+    public void send(String mlatitude, String mlongitude) {
+
+        //LocationManager locationManager = (LocationManager) activity.getSystemService(activity.LOCATION_SERVICE);
+        /*
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         } else {
-                        /*
+
                         //Toast.makeText(this, "Obteniendo localizacion...", Toast.LENGTH_LONG).show();
                         Lati=mLatitudeData.getText().toString();
                         Long=mLongitudeData.getText().toString();
-                        */
-            miUbicacion();
+
+            //miUbicacion(locationManager);
 
         }
+        */
         //Toast.makeText(this, "Ejecutando hilo..", Toast.LENGTH_LONG).show();
-        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender",this.Nseller,"","","", Double.toString(mlatitude), Double.toString(mlongitude));
+        //new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender",this.Nseller,this.Nprod,"","", Double.toString(mlatitude), Double.toString(mlongitude),"");
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/vender",this.Nseller,this.Nprod,"","", mlatitude, mlongitude,"");
     }
 
     public void sendRegister(){
-        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/nuevo_producto",this.Nseller,this.Nprod,this.Nprecio,this.Ndescp,"","");
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/nuevo_producto",this.Nseller,this.Nprod,this.Nprecio,this.Ndescp,"","","");
     }
+
+    public void sendNovender(){
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/novender",this.Nseller,this.Nprod,"","","","","");
+    }
+    public void sendFav(){
+        new HttpAsyncTask().execute("http://usmvende.telprojects.xyz/addfavoritos",this.Nseller,this.Nprod,"","","","",this.Nvendedor);
+    }
+    /*
 
     private void actualizarUbicacion(Location location) {
         if (location != null) {
@@ -85,8 +105,8 @@ public class EnvioData {
             mlongitude = location.getLongitude();
         }
 
-    }
-
+    }*/
+    /*
     LocationListener loclistener = new LocationListener() {
 
         @Override
@@ -108,10 +128,12 @@ public class EnvioData {
         public void onProviderDisabled(String provider) {
 
         }
-    };
+    };*/
 
-    private void miUbicacion() {
-        LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+    /*
+
+    private void miUbicacion(LocationManager locationManager) {
+        //LocationManager locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             //mensaje error e indicar que se encienda gps o internet
             Toast.makeText(activity, "Proveedores desactivados, Habilite GPS ", Toast.LENGTH_LONG).show();
@@ -121,17 +143,19 @@ public class EnvioData {
                 return;
             }
             if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                actualizarUbicacion(location);
+                //Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                //actualizarUbicacion(location);
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 0, loclistener);
             }
 
         }
 
     }
+    */
 
     //Metodo que realiza la conexion y procesa los datos de envio y recibo
-    public String POST(String targeturl,String Nvendedor,String Nprod, String Nprecio,String Ndescp, String gps) {
+
+    public String POST(String targeturl,String Nseller,String Nprod, String Nprecio,String Ndescp, String gps,String Nvendedor) {
         String result = "";
         String json = "";
         StringTokenizer tokens = new StringTokenizer(targeturl, "/");
@@ -149,21 +173,34 @@ public class EnvioData {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+
+            //Nseller : es el user, para nuevo_producto, vender, novender
+            //Nseller: es el vendedor(adapter) y Nvendedor : es el user (BD) para addfavoritos
             // build jsonObject
             JSONObject jsonObject = new JSONObject();
             if (third.trim().equals("nuevo_producto")) {
                 jsonObject.put("producto", Nprod);
                 jsonObject.put("descripcion", Ndescp);
                 jsonObject.put("precio", Nprecio);
-                jsonObject.put("vendedor", Nvendedor);
+                jsonObject.put("vendedor", Nseller);
             }
             else if (third.trim().equals("vender")) {
-                jsonObject.put("vendedor", Nvendedor);
+                jsonObject.put("vendedor", Nseller);
                 System.out.println(gps);
-                //jsonObject.put("producto", Nprod);
+                jsonObject.put("producto", Nprod);
                 jsonObject.put("gps",gps);
             }
-            else {
+            else if(third.trim().equals("novender")){
+                jsonObject.put("vendedor", Nseller);
+                jsonObject.put("producto", Nprod);
+            }
+            else if (third.trim().equals("addfavoritos")){
+                jsonObject.put("vendedor", Nvendedor);
+                jsonObject.put("producto", Nprod);
+                jsonObject.put("user",Nseller);
+            }
+            else{
+
             }
             /*
             // build jsonObject
@@ -204,7 +241,7 @@ public class EnvioData {
         protected String doInBackground(String... urls) {
             String gps;
             gps = urls[5]+","+urls[6];
-            return POST(urls[0],urls[1],urls[2],urls[3],urls[4],gps);
+            return POST(urls[0],urls[1],urls[2],urls[3],urls[4],gps,urls[7]);
             //gps = urls[2]+","+urls[3];
             //return POST(urls[0],urls[1],gps);
         }
@@ -214,11 +251,11 @@ public class EnvioData {
         protected void onPostExecute(String result) {
             Log.d("RESPUESTA SERVIDOR DATO",result);
             if(result.equals("True")){
-                Toast.makeText(activity, "Datos Enviados!", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Operación exitosa!", Toast.LENGTH_LONG).show();
             }
             else if(result.equals("False"))
             {
-                Toast.makeText(activity, "Error en envío de datos!", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Operación fallida!", Toast.LENGTH_LONG).show();
             }
             else{
                 Toast.makeText(activity, "Recuerda ver esto", Toast.LENGTH_LONG).show();

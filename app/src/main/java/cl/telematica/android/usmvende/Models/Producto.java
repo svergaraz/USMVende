@@ -9,10 +9,8 @@ public class Producto/* implements Parcelable*/ {
     private String descripcion;
     private String precio;
     private String nombreV;
-    private String localizacion;
-    private String topic;
-    private String fav;
-    private String sell;
+    private String fav="0";
+    private String sell="0";
 
     public void setNombreP(String nombre){
         this.nombreP = nombre;
@@ -21,6 +19,7 @@ public class Producto/* implements Parcelable*/ {
     public String getNombreP(){
         return nombreP ;
     }
+
     public void setDescripcion(String descripcion){
         this.descripcion = descripcion;
     }
@@ -36,6 +35,7 @@ public class Producto/* implements Parcelable*/ {
     public String getPrecio(){
         return precio;
     }
+
     public void setNombreV(String nombreV){
         this.nombreV = nombreV;
     }
@@ -44,31 +44,13 @@ public class Producto/* implements Parcelable*/ {
         return nombreV;
     }
 
-    public void setLocalizacion(String localizacion){
-        this.localizacion= localizacion;
-    }
-
-    public String getLocalizacion(){
-        return localizacion;
-    }
-
-    public void setTopic(String topic){
-
-        this.topic= topic;
-    }
-
-    public String getTopic(){
-        return topic;
-    }
-
     public void setFav(String fav){
         this.fav = fav;
     }
+
     public String getFav(){return fav;}
 
-    public void setSell(String sell){
-        this.sell = sell;
-    }
+    public void setSell(String sell){this.sell = sell;}
     public String getSell(){return sell;}
 
    /* public Producto(Parcel parcel){

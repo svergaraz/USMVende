@@ -123,8 +123,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         // Add new marker to the Google Map Android API V2
         mMap.addMarker(options);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(posSeller));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(posSeller));
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
 
         //SOLICITA COORDENADAS DEL COMPRADOR
         miUbicacion();

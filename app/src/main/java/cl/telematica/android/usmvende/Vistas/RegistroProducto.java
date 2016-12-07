@@ -52,33 +52,46 @@ import java.util.StringTokenizer;
 import cl.telematica.android.usmvende.Adapters.MyAdapterComprador;
 import cl.telematica.android.usmvende.EnvioData;
 import cl.telematica.android.usmvende.Models.BaseDatosSqlite;
-import cl.telematica.android.usmvende.Presenters.LocationPresenterImpl;
-import cl.telematica.android.usmvende.Interfaces.LocationView;
 import cl.telematica.android.usmvende.R;
 import cl.telematica.android.usmvende.Models.Producto;
 
 
-public class RegistroProducto extends AppCompatActivity {
+public class RegistroProducto extends AppCompatActivity implements LocationListener {
 
     EditText txtNP, txtDP, txtPP, txtNV;
+    TextView mLatitudeData;
+    TextView mLongitudeData;
     /*______________________________________________*/
     private RecyclerView recyclerView;
     private MyAdapterComprador adapter;
+    private MyAdapterComprador adapter2;
     private List<Producto> listProduct;
     private FloatingActionButton fab;
     /*______________________________________________*/
+    private LocationManager mLocationManager;
+    private final String GPS = LocationManager.GPS_PROVIDER; //Nombre del proveedor de ubicación GPS.
+    private final String NET = LocationManager.NETWORK_PROVIDER; //Nombre del proveedor de ubicación de red.
 
+    private static final long minTime = 15000; //Mínimo intervalo de tiempo entre actualizaciones de ubicación, en milisegundos
+    private static final float minDistance = 200; //Distancia mínima entre las actualizaciones de ubicación, en metros
 
+    double lat, lng;
     Context mcontext;
     Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.act_rg_pro);
+
         mcontext = this;
         activity = this;
+        mLatitudeData = (TextView) findViewById(R.id.latitude);
+        mLongitudeData = (TextView) findViewById(R.id.longitude);
+        mLocationManager =(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        //adapter2=  new MyAdapterComprador(activity,listProduct);
         /*____________________________________*/
-        setContentView(R.layout.act_rg_pro);
+
         recyclerView = (RecyclerView) findViewById(R.id.recyle_view);
         listProduct = new ArrayList<Producto>();
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -104,11 +117,18 @@ public class RegistroProducto extends AppCompatActivity {
             protected void onPostExecute(String result) {
                 System.out.println(result);
                 if (result != null) {
+                    String Long;
+                    String Lati;
                     System.out.println(result);
                     // specify an adapter (see also next example)
                     listProduct = getListProduct(result);
                     adapter = new MyAdapterComprador(activity, listProduct);
                     adapter.setSwitch(0);
+                    //adapter2 = adapter;
+                    Toast.makeText(mcontext, "Obteniendo localizacion...", Toast.LENGTH_SHORT).show();
+                    Lati=mLatitudeData.getText().toString();
+                    Long=mLongitudeData.getText().toString();
+                    adapter.actualizarUbicacion(Lati,Long);
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -116,6 +136,7 @@ public class RegistroProducto extends AppCompatActivity {
         task.execute();
 
     }
+
     public String consulta(Context mcontext){
         BaseDatosSqlite dbInstance = new BaseDatosSqlite(mcontext);
         SQLiteDatabase db = dbInstance.getWritableDatabase();
@@ -217,12 +238,47 @@ public class RegistroProducto extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+        //Condiciones para determinar si los de GPS o NET estan habilitados
+        if (!mLocationManager.isProviderEnabled(NET)) {//Devuelve el estado actual activado / desactivado del proveedor determinado.
+            Toast.makeText(this, getString(R.string.location_error_msg), Toast.LENGTH_LONG).show();
+        }
+        else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(mLocationManager.isProviderEnabled(NET)){
+                mLocationManager.requestLocationUpdates(NET, minTime, minDistance, this); //Registrarse para actualizaciones de ubicación utilizando el proveedor de llamada, y un LocationListener especificado.
+            }
+        }
+        Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
+
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+            return;
+        }
+        mLocationManager.removeUpdates(this); //Elimina todas las actualizaciones de ubicación para el LocationListener especificado
+        Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onStop() {
+        super.onPause();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
+            return;
+        }
+        mLocationManager.removeUpdates(this); //Elimina todas las actualizaciones de ubicación para el LocationListener especificado
+        Toast.makeText(this,"Localizacion Detenida", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -279,5 +335,29 @@ public class RegistroProducto extends AppCompatActivity {
                 dialog.dismiss();
             }
         };
+    }
+
+    @Override
+    public void onLocationChanged(Location mLocation) {
+        mLatitudeData.setText(Double.toString(mLocation.getLatitude()));
+        mLongitudeData.setText(Double.toString(mLocation.getLongitude()));
+         //lat = location.getLatitude();
+         //lng = location.getLongitude();
+        //adapter2.actualizarUbicacion(lat,lng);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Toast.makeText(this, getString(R.string.status_msg) + "--> Provider: " + provider + " Status: " + status, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }

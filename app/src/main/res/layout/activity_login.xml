@@ -33,26 +33,26 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:id="@+id/pass"
-        android:text="password"
         android:layout_marginBottom="43dp"
         android:layout_above="@+id/login"
         android:layout_alignStart="@+id/email"
         android:textAlignment="textStart"
-        android:inputType="textPassword" />
+        android:inputType="textPassword"
+        android:hint="Password" />
 
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
         android:ems="10"
             android:id="@+id/email"
-            android:text="user@example.com"
-            android:layout_marginStart="86dp"
+        android:layout_marginStart="86dp"
         android:layout_weight="1"
         android:layout_marginBottom="12dp"
         android:layout_above="@+id/pass"
         android:layout_alignParentStart="true"
         android:textAlignment="textStart"
-        android:inputType="textEmailAddress" />
+        android:inputType="textEmailAddress"
+        android:hint="user@example.com" />
 
     <Button
         android:layout_width="wrap_content"

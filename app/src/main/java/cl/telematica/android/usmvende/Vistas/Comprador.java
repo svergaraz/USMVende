@@ -60,6 +60,7 @@ public class Comprador extends AppCompatActivity {
         super.onResume();
     }
 
+    /*
     public List<Producto> getListProduct(String result){
         producto = new ArrayList<>();
         for(int i = 0; i < 12; i++) {
@@ -72,5 +73,6 @@ public class Comprador extends AppCompatActivity {
         }
         return producto;
     }
+    */
 
 }

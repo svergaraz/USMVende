@@ -15,10 +15,10 @@
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/emailreg"
-        android:text="user@example.com"
         android:layout_marginTop="166dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:hint="user@example.com" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -26,10 +26,10 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/passreg"
-        android:text="Password"
         android:layout_marginTop="9dp"
         android:layout_below="@+id/emailreg"
-        android:layout_alignStart="@+id/emailreg" />
+        android:layout_alignStart="@+id/emailreg"
+        android:hint="Password" />
 
     <Button
         android:layout_width="wrap_content"
