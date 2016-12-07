@@ -238,7 +238,7 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
     public void onResume(){
         super.onResume();
         //Condiciones para determinar si los de GPS o NET estan habilitados
-        if (!mLocationManager.isProviderEnabled(GPS)) {//Devuelve el estado actual activado / desactivado del proveedor determinado.
+        if (!mLocationManager.isProviderEnabled(GPS)&& !mLocationManager.isProviderEnabled(NET)) {//Devuelve el estado actual activado / desactivado del proveedor determinado.
             Toast.makeText(this, getString(R.string.location_error_msg), Toast.LENGTH_LONG).show();
         }
         else {
@@ -249,6 +249,9 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
             }
             if(mLocationManager.isProviderEnabled(GPS)){
                 mLocationManager.requestLocationUpdates(GPS, minTime, minDistance, this); //Registrarse para actualizaciones de ubicación utilizando el proveedor de llamada, y un LocationListener especificado.
+            }
+            if(mLocationManager.isProviderEnabled(NET)){
+                mLocationManager.requestLocationUpdates(NET, minTime, minDistance, this); //Registrarse para actualizaciones de ubicación utilizando el proveedor de llamada, y un LocationListener especificado.
             }
         }
         Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();

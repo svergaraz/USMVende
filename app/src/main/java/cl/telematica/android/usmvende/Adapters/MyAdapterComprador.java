@@ -173,7 +173,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
             @Override
             public void onClick(View v) {
                 if ( !producto.get(position).getFav().equals("0") || !producto.get(position).getFav().equals("1") ){
-                    Toast.makeText(activity, "Aqui toy..", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Agregando..", Toast.LENGTH_SHORT).show();
                     producto.get(position).setFav("0");
                 }
 
@@ -191,7 +191,7 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                     else {
                         producto.get(position).setFav("0");
                     }
-                    Toast.makeText(activity, producto.get(position).getFav(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(activity, producto.get(position).getFav(), Toast.LENGTH_SHORT).show();
             }
 
 
