@@ -187,6 +187,7 @@ public class BlankFragment2 extends Fragment{
                 producto.setPrecio(objeto.getString("precio"));
                 producto.setDescripcion(objeto.getString("descripcion"));
                 producto.setSell(objeto.getString("vendiendo"));
+                producto.setFav("1");
 
                 listaProducto.add(producto);
             }

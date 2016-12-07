@@ -9,8 +9,8 @@ public class Producto/* implements Parcelable*/ {
     private String descripcion;
     private String precio;
     private String nombreV;
-    private String fav="0";
-    private String sell="0";
+    private String fav;
+    private String sell;
 
     public void setNombreP(String nombre){
         this.nombreP = nombre;

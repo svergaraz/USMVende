@@ -186,7 +186,7 @@ public class EnvioData {
             }
             else if (third.trim().equals("vender")) {
                 jsonObject.put("vendedor", Nseller);
-                System.out.println(gps);
+                //System.out.println(gps);
                 jsonObject.put("producto", Nprod);
                 jsonObject.put("gps",gps);
             }

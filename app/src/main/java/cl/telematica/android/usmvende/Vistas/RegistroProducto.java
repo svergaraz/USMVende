@@ -64,7 +64,7 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
     /*______________________________________________*/
     private RecyclerView recyclerView;
     private MyAdapterComprador adapter;
-    private MyAdapterComprador adapter2;
+    //private MyAdapterComprador adapter2;
     private List<Producto> listProduct;
     private FloatingActionButton fab;
     /*______________________________________________*/
@@ -73,7 +73,7 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
     private final String NET = LocationManager.NETWORK_PROVIDER; //Nombre del proveedor de ubicación de red.
 
     private static final long minTime = 15000; //Mínimo intervalo de tiempo entre actualizaciones de ubicación, en milisegundos
-    private static final float minDistance = 200; //Distancia mínima entre las actualizaciones de ubicación, en metros
+    private static final float minDistance = 0; //Distancia mínima entre las actualizaciones de ubicación, en metros
 
     double lat, lng;
     Context mcontext;
@@ -119,7 +119,6 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
                 if (result != null) {
                     String Long;
                     String Lati;
-                    System.out.println(result);
                     // specify an adapter (see also next example)
                     listProduct = getListProduct(result);
                     adapter = new MyAdapterComprador(activity, listProduct);
@@ -239,7 +238,7 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
     public void onResume(){
         super.onResume();
         //Condiciones para determinar si los de GPS o NET estan habilitados
-        if (!mLocationManager.isProviderEnabled(NET)) {//Devuelve el estado actual activado / desactivado del proveedor determinado.
+        if (!mLocationManager.isProviderEnabled(GPS)) {//Devuelve el estado actual activado / desactivado del proveedor determinado.
             Toast.makeText(this, getString(R.string.location_error_msg), Toast.LENGTH_LONG).show();
         }
         else {
@@ -248,8 +247,8 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
                 Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
                 return;
             }
-            if(mLocationManager.isProviderEnabled(NET)){
-                mLocationManager.requestLocationUpdates(NET, minTime, minDistance, this); //Registrarse para actualizaciones de ubicación utilizando el proveedor de llamada, y un LocationListener especificado.
+            if(mLocationManager.isProviderEnabled(GPS)){
+                mLocationManager.requestLocationUpdates(GPS, minTime, minDistance, this); //Registrarse para actualizaciones de ubicación utilizando el proveedor de llamada, y un LocationListener especificado.
             }
         }
         Toast.makeText(this,"Localizacion Retomada", Toast.LENGTH_SHORT).show();
@@ -267,18 +266,6 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
         }
         mLocationManager.removeUpdates(this); //Elimina todas las actualizaciones de ubicación para el LocationListener especificado
         Toast.makeText(this,"Localizacion Pausada", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onStop() {
-        super.onPause();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, getString(R.string.permission_error_msg), Toast.LENGTH_LONG).show();
-            return;
-        }
-        mLocationManager.removeUpdates(this); //Elimina todas las actualizaciones de ubicación para el LocationListener especificado
-        Toast.makeText(this,"Localizacion Detenida", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -339,8 +326,14 @@ public class RegistroProducto extends AppCompatActivity implements LocationListe
 
     @Override
     public void onLocationChanged(Location mLocation) {
-        mLatitudeData.setText(Double.toString(mLocation.getLatitude()));
-        mLongitudeData.setText(Double.toString(mLocation.getLongitude()));
+        if (mLocation != null){
+            mLatitudeData.setText(Double.toString(mLocation.getLatitude()));
+            mLongitudeData.setText(Double.toString(mLocation.getLongitude()));
+        }
+        else{
+            Toast.makeText(this,"Localizacion NULL", Toast.LENGTH_SHORT).show();
+        }
+
          //lat = location.getLatitude();
          //lng = location.getLongitude();
         //adapter2.actualizarUbicacion(lat,lng);

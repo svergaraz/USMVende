@@ -12,10 +12,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Map;
-
-import cl.telematica.android.usmvende.Vistas.MapsActivity;
-import cl.telematica.android.usmvende.Vistas.menu;
+import cl.telematica.android.usmvende.Vistas.Map_notification;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     private static final String TAG = "MyFirebaseMsgService";
@@ -68,7 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param body FCM message body received.
      */
     private void sendNotification(String body) {
-        Intent intent = new Intent(this, MapsActivity.class); // ojo cambie mainactivity por menu sera meenu? o registro producto?
+        Intent intent = new Intent(this, Map_notification.class); // ojo cambie mainactivity por menu sera meenu? o registro producto?
         Log.d(TAG,body);
         intent.putExtra("latlng",body);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

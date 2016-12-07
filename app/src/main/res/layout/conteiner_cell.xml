@@ -51,6 +51,15 @@
                 android:layout_below="@+id/product_description2"
                 android:layout_alignEnd="@+id/product_precio2" />
 
+            <Button
+                android:text="Ver Mapa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/product_description2"
+                android:layout_toLeftOf="@+id/btn_ok"
+                android:layout_toStartOf="@+id/btn_ok"
+                android:id="@+id/ver_mapa" />
+
 
         </RelativeLayout>
     </LinearLayout>

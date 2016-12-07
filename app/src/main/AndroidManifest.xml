@@ -25,6 +25,7 @@
         <activity android:name=".Vistas.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,7 +49,8 @@
 
         <activity android:name=".Vistas.RegistroProducto" />
         <activity android:name=".Vistas.Comprador" />
-        <activity android:name=".Vistas.MapsActivity">
+        <activity android:name=".Vistas.Map_notification">
+
             <!--
             <intent-filter>
                 <action android:name="OPEN_ACTIVITY_1" />
@@ -70,7 +72,8 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".Vistas.menu" />
-        <activity android:name=".Vistas.Registro"></activity>
+        <activity android:name=".Vistas.Registro" />
+        <activity android:name=".Vistas.Map_comprador"></activity>
     </application>
 
 </manifest>

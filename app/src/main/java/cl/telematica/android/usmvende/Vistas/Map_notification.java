@@ -49,7 +49,7 @@ import java.util.List;
 import cl.telematica.android.usmvende.DataParser;
 import cl.telematica.android.usmvende.R;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class Map_notification extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private GoogleMap mMap;
     ArrayList<LatLng> MarkerPoints;
     GoogleApiClient mGoogleApiClient;
@@ -63,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_map_notification);
         posVendedor = getIntent().getStringExtra("latlng");
         mContext = this;
 
@@ -110,16 +110,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //SOLICITA COORDENADAS DEL VENDEDOR
         //proceso de obtencion de coordenadas del vendedor recibidas por notificacion
+        //Log.d("BODY ",posVendedor);
         String[] aux = posVendedor.split(",");
         String[] aux2 = aux[0].split(":");
         Log.d("coordenadas lat/long", aux2[1] + "/" + aux[1]);
-        LatLng posSeller = new LatLng(Double.parseDouble(aux2[1].toString().trim()), Double.parseDouble(aux[1].toString().trim()));
+        LatLng posSeller = new LatLng(Double.parseDouble(aux2[1].toString()), Double.parseDouble(aux[1].toString()));
         // Adding new item to the ArrayList
         MarkerPoints.add(posSeller);
         // Creating MarkerOptions
         MarkerOptions options = new MarkerOptions();
         // Setting the position of the marker
-        options.position(posSeller).title("Posicion Vendedor: " + aux2[1].toString().trim() + "/" + aux[1].toString().trim());
+        options.position(posSeller).title("Vendedor: " + aux2[1].toString() + "/" + aux[1].toString());
         options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         // Add new marker to the Google Map Android API V2
         mMap.addMarker(options);
@@ -140,7 +141,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (marcador != null) {
             marcador.remove();
         }
-        marcador = mMap.addMarker(new MarkerOptions().position(posClient).title("Posicion Comprador:" + lat + "/" + lng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        marcador = mMap.addMarker(new MarkerOptions().position(posClient).title("Comprador:" + lat + "/" + lng).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         mMap.animateCamera(miubicacion);
 
     }
