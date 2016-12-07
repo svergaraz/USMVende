@@ -181,7 +181,12 @@ public class MyAdapterComprador extends RecyclerView.Adapter<MyAdapterComprador.
                         producto.get(position).setFav("1");
                         EnvioData envio = new EnvioData(producto.get(position).getNombreP(),producto.get(position).getNombreV(), activity);
                         envio.sendFav();
-
+                        /*________________________*/
+                        Intent intent = activity.getIntent();
+                        intent.addFlags(intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        activity.finish();
+                        activity.startActivity(intent);
+                        /*______________________*/
                     }
                     else {
                         producto.get(position).setFav("0");
